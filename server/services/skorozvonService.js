@@ -42,7 +42,6 @@ async function getSkorozvonCalls(gte, lte) {
 
     let usersCallsArray = []
 
-    // получение юзеров из скорозвона
     const usersList = await axios.get('https://pod5-shard2-lb1.skorozvon.ru/settings/team.json', {
         headers: { 
             Authorization: `Bearer ${token}` 
@@ -63,6 +62,41 @@ async function getSkorozvonCalls(gte, lte) {
         })
     }
     return usersCallsArray
+}
+
+
+async function getLeadTimeline(transfer) {
+
+    try {
+
+        const token = await getSkorozvonToken()
+        const leadTimelineURL = 'https://pod5-shard2-lb1.skorozvon.ru/'
+
+        let userName = ""
+
+        const responseLead = await axios.get(`${leadTimelineURL}${transfer.leadURL}/history`, {
+             headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }).then((resp) => resp.data.data)
+
+        for (let lead of responseLead.data) {
+
+            let user = lead.called_user || lead.manager
+
+            if (lead.result === 'Целевой лид' && user) {
+                userName = user
+                break
+            }
+            
+        }
+
+        return userName
+
+    } catch (e) {
+        console.log(e.message)
+    }
+
 }
 
 module.exports = { getSkorozvonToken, getSkorozvonCalls }

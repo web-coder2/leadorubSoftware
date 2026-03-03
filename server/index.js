@@ -8,6 +8,7 @@ const session = require('express-session')
 const cors = require('cors');
 
 const { getSkorozvonCalls } = require('./services/skorozvonService.js')
+const { geteResidenceLeads } = require('./services/residenceService.js')
 
 dotenv.config()
 
