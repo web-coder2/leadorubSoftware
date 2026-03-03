@@ -6,6 +6,7 @@ const usersModel = new Schema({
     skorozvonId: Number,
     password: String,
     rankName: String,
+    token: String,
 })
 
 module.exports = model('usersModel', usersModel);

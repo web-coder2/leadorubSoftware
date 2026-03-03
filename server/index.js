@@ -5,6 +5,9 @@ const path = require('path')
 const mongoose = require('mongoose')
 const dotenv = require('dotenv')
 const session = require('express-session')
+const cors = require('cors');
+
+const { getSkorozvonCalls } = require('./services/skorozvonService.js')
 
 dotenv.config()
 
@@ -43,6 +46,14 @@ async function startConnectToDB() {
     }
 }
 
+
+// блок дял импорта и теста сервисов и функций на их работу
+async function testData() {
+    let callsData = await getSkorozvonCalls()
+    console.log(callsData)
+}
+
+testData()
 
 app.listen(PORT, () => {
     startConnectToDB()
