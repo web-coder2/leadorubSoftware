@@ -8,10 +8,8 @@ dotenv.config()
 
 const { residenceBaseUrl, residenceToken } = process.env
 
-async function geteResidenceLeads(gte, lte) {
-
+async function getResidenceLeads(gte, lte) {
     try {
-
         const responseLeads = await axios.get(`${residenceBaseUrl}leads`, {
             headers: { Authorization: `Bearer ${residenceToken}` },
             params: {
@@ -27,8 +25,27 @@ async function geteResidenceLeads(gte, lte) {
     } catch (e) {
         console.log(e.message)
     }
+}
+
+// получить лиды резиденции по одному телефону
+async function getLeadsOnePhone(gte, lte, phone) {
+
+    try {
+
+        const allLeadsInDate = getResidenceLeads(gte, lte)
+        const allLeadsData = allLeadsInDate.data
+
+        const leadsByPhone = allLeadsData.filter((item) => {
+            return item.phone === phone
+        })
+
+        return leadsByPhone
+
+    } catch (e) {
+        console.log(e.message)
+    }
 
 }
 
 
-module.exports = { geteResidenceLeads }
+module.exports = { getResidenceLeads }
