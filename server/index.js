@@ -7,8 +7,9 @@ const dotenv = require('dotenv')
 const session = require('express-session')
 const cors = require('cors');
 
-const { getSkorozvonCalls } = require('./services/skorozvonService.js')
-const { getResidenceLeads } = require('./services/residenceService.js')
+const { setTransfersCrone } = require('./crones/setTransfers.js')
+
+setTransfersCrone()
 
 dotenv.config()
 
@@ -46,15 +47,6 @@ async function startConnectToDB() {
         console.log(err);
     }
 }
-
-
-// блок дял импорта и теста сервисов и функций на их работу
-async function testData() {
-    let callsData = await getSkorozvonCalls()
-    console.log(callsData)
-}
-
-testData()
 
 app.listen(PORT, () => {
     startConnectToDB()

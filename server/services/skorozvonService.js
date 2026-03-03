@@ -65,38 +65,74 @@ async function getSkorozvonCalls(gte, lte) {
 }
 
 
-async function getLeadTimeline(transfer) {
+async function getLeadsToOneDay(gte, lte) {
 
     try {
-
+        const url = 'https://pod5-shard2-lb1.skorozvon.ru/calls';
         const token = await getSkorozvonToken()
-        const leadTimelineURL = 'https://pod5-shard2-lb1.skorozvon.ru/'
 
-        let userName = ""
+        const params = {
+            limit: 100,
+            'date[from]': dayjs(gte).format('YYYY-MM-DD'),
+            'date[to]': dayjs(lte).format('YYYY-MM-DD'),
+            'duration[from]': '',
+            'duration[to]': '',
+            type: 'transfered',
+            direction: 1,
+            column: 'start',
+            page: 1,
+            offset: 0,
+        };
 
-        const responseLead = await axios.get(`${leadTimelineURL}${transfer.leadURL}/history`, {
-             headers: {
-                Authorization: `Bearer ${token}`
-            }
-        }).then((resp) => resp.data.data)
+        const trasnfersList = await axios.get(url, {
+            params: params,
+            headers: { Authorization: `Bearer ${token}`}
+        }).then((resp) => {
+            return resp.data.data.calls;
+        });
 
-        for (let lead of responseLead.data) {
-
-            let user = lead.called_user || lead.manager
-
-            if (lead.result === 'Целевой лид' && user) {
-                userName = user
-                break
-            }
-            
-        }
-
-        return userName
-
+        return trasnfersList
     } catch (e) {
         console.log(e.message)
     }
 
 }
 
-module.exports = { getSkorozvonToken, getSkorozvonCalls }
+async function getLeadTimeline(transfer) {
+    try {
+        const token = await getSkorozvonToken();
+        const leadURL = `https://pod5-shard2-lb1.skorozvon.ru/${transfer.lead_url}/history`;
+
+        let userName = "";
+
+        const response = await axios.get(leadURL, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        const leads = response.data.data;
+
+        for (let lead of leads.data) {
+
+            let user = lead.called_user || lead.manager;
+
+            // if (lead.result === 'Целевой лид' && user) {
+            //     userName = user;
+            //     break;
+            // }
+            if (user) {
+                userName = user;
+                break;
+            }
+        }
+
+        return userName;
+
+    } catch (e) {
+        console.log(e.message);
+        return null;
+    }
+}
+
+module.exports = { getSkorozvonToken, getSkorozvonCalls, getLeadsToOneDay, getLeadTimeline }
