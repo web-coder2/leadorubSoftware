@@ -6,8 +6,8 @@ const dotenv = require('dotenv')
 
 const leadsModel = require('../models/leadsModel.js')
 
-const { getSkorozvonToken, getLeadsToOneDay, getLeadTimeline } = require('../services/skorozvonService.js')
-const { getResidenceLeads } = require('../services/residenceService.js')
+const { getSkorozvonToken, getLeadsToOneDay, getLeadTimeline, getLeadAudioUrls } = require('../services/skorozvonService.js')
+const { getResidenceLeads, getLeadsOnePhone } = require('../services/residenceService.js')
 
 
 async function setTransfersToDB(gte, lte) {
@@ -18,7 +18,22 @@ async function setTransfersToDB(gte, lte) {
 
         let leadUser = await getLeadTimeline(lead)
 
-        console.log(leadUser)
+        let leadResidence = await getLeadsOnePhone(gte, lte, lead.number.slice(1))
+        let leadAudioArray = await getLeadAudioUrls(lead)
+
+        let leadInfo = {
+            date: dayjs(gte).format('YYYY-MM-DD'),
+            broker: leadResidence.broker,
+            price: leadResidence.price,
+            phone: lead.number.slice(1),
+            audioArray: leadAudioArray,
+            residenceStatus: leadResidence.status,
+            statusOKK: false,
+            selfLead: false,
+            user: leadUser
+        }
+
+        console.log(leadInfo)
 
     }
 

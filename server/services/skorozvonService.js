@@ -98,6 +98,46 @@ async function getLeadsToOneDay(gte, lte) {
 
 }
 
+async function getLeadAudioUrls(transfer) {
+    try {
+
+        const token = await getSkorozvonToken()
+        const leadURL = `https://pod5-shard2-lb1.skorozvon.ru/${transfer.lead_url}/history`;
+
+        const response = await axios.get(leadURL, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        const leads = response.data.data;
+        let audioUrls = []
+
+        for (let lead of leads.data) {
+            const audioUrl = `https://pod5-shard2-lb1.skorozvon.ru/call_records/${lead.attachment_id}`
+
+            const responseUrl = await axios.get(audioUrl, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+
+            // audioUrls.push({
+            //     url: responseUrl.data.data.url,
+            //     manager: responseUrl.data.data.track_manager
+            // })
+
+            audioUrls.push(responseUrl.data.data.url)
+
+        }
+
+        return audioUrls
+
+    } catch (e) {
+        console.log(e.message)
+    }
+}
+
 async function getLeadTimeline(transfer) {
     try {
         const token = await getSkorozvonToken();
@@ -117,10 +157,6 @@ async function getLeadTimeline(transfer) {
 
             let user = lead.called_user || lead.manager;
 
-            // if (lead.result === 'Целевой лид' && user) {
-            //     userName = user;
-            //     break;
-            // }
             if (user) {
                 userName = user;
                 break;
@@ -135,4 +171,4 @@ async function getLeadTimeline(transfer) {
     }
 }
 
-module.exports = { getSkorozvonToken, getSkorozvonCalls, getLeadsToOneDay, getLeadTimeline }
+module.exports = { getSkorozvonToken, getSkorozvonCalls, getLeadsToOneDay, getLeadTimeline, getLeadAudioUrls }

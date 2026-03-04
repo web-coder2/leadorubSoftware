@@ -32,14 +32,32 @@ async function getLeadsOnePhone(gte, lte, phone) {
 
     try {
 
-        const allLeadsInDate = getResidenceLeads(gte, lte)
+        const allLeadsInDate = await getResidenceLeads(gte, lte)
         const allLeadsData = allLeadsInDate.data
+        const allowedHolds = ['hold', 'confirmed', 'refused']
 
         const leadsByPhone = allLeadsData.filter((item) => {
             return item.phone === phone
         })
 
-        return leadsByPhone
+        let residenceInfo = {
+            price: 0,
+            status: "created",
+            broker: undefined
+        }
+
+        leadsByPhone.forEach((item) => {
+
+            if (allowedHolds.includes(item.status)) {
+                residenceInfo.price += item.price.offer
+                residenceInfo.status = item.status
+            }
+
+            residenceInfo.broker = item.userId.name
+
+        })
+
+        return residenceInfo
 
     } catch (e) {
         console.log(e.message)
@@ -48,4 +66,4 @@ async function getLeadsOnePhone(gte, lte, phone) {
 }
 
 
-module.exports = { getResidenceLeads }
+module.exports = { getResidenceLeads, getLeadsOnePhone }
