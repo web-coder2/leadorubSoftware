@@ -8,7 +8,9 @@ const leadsModel = require('../models/leadsModel.js')
 const usersModel = require('../models/usersModel.js')
 
 const { getSkorozvonToken, getLeadsToOneDay, getLeadTimeline, getLeadAudioUrls } = require('../services/skorozvonService.js')
-const { getResidenceLeads, getLeadsOnePhone } = require('../services/residenceService.js')
+const { getResidenceLeads, getLeadsOnePhone, defaineSelfLead } = require('../services/residenceService.js')
+const { getAllUsers, getUserIdByName } = require('../services/usersService.js')
+const { upsertNewLeadsData } = require('../services/leadsService.js')
 
 
 async function setTransfersToDB(gte, lte) {
@@ -21,6 +23,8 @@ async function setTransfersToDB(gte, lte) {
 
         let leadResidence = await getLeadsOnePhone(gte, lte, lead.number.slice(1))
         let leadAudioArray = await getLeadAudioUrls(lead)
+        let userIdObject = await getUserIdByName(leadUser)
+        let isSelfLead = await defaineSelfLead(gte, lte, lead.number.slice(1))
 
         let leadInfo = {
             date: dayjs(gte).format('YYYY-MM-DD'),
@@ -30,12 +34,14 @@ async function setTransfersToDB(gte, lte) {
             audioArray: leadAudioArray,
             residenceStatus: leadResidence.status,
             statusOKK: false,
-            selfLead: false,
-            user: leadUser
+            selfLead: isSelfLead,
+            user: userIdObject?._id ?? undefined,
+            userName: leadUser
         }
 
         console.log(leadInfo)
-
+        
+        const result = await upsertNewLeadsData(leadInfo)
     }
 
 }

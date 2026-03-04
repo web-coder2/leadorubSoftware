@@ -32,3 +32,5 @@ async function getUserIdByName(name) {
         console.log(e.message)
     }
 }
+
+module.exports = { getAllUsers, getUserIdByName }

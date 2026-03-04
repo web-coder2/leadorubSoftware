@@ -12,8 +12,9 @@ const leadsModel = new Schema({
     user: {
         type: Schema.Types.ObjectId,
         ref: 'usersModel',
-        required: true
-    }
+        required: false // TODO: потом возможно поменять
+    },
+    userName: String
 })
 
 module.exports = model('leadsModel', leadsModel);

@@ -27,11 +27,32 @@ async function getResidenceLeads(gte, lte) {
     }
 }
 
+async function defaineSelfLead(gte, lte, phone) {
+
+    const allowedUsers = ['Владимир Медоед', 'Наташа Юрист ']
+
+    const allLeadsToDate = await getResidenceLeads(gte, lte)
+    const allLeadsData = allLeadsToDate.data
+    const leadsByPhone = allLeadsData.filter((item) => {
+        return item.phone === phone
+    })
+
+    let selfLead = false
+
+    if (leadsByPhone) {
+        for (let lead of leadsByPhone) {
+            if (allowedUsers.includes(lead.userId.name)) {
+                selfLead = true
+                break
+            }
+        }
+    }
+    return selfLead
+}
+
 // получить лиды резиденции по одному телефону
 async function getLeadsOnePhone(gte, lte, phone) {
-
     try {
-
         const allLeadsInDate = await getResidenceLeads(gte, lte)
         const allLeadsData = allLeadsInDate.data
         const allowedHolds = ['hold', 'confirmed', 'refused']
@@ -39,31 +60,23 @@ async function getLeadsOnePhone(gte, lte, phone) {
         const leadsByPhone = allLeadsData.filter((item) => {
             return item.phone === phone
         })
-
         let residenceInfo = {
             price: 0,
             status: "created",
             broker: undefined
         }
-
         leadsByPhone.forEach((item) => {
-
             if (allowedHolds.includes(item.status)) {
                 residenceInfo.price += item.price.offer
                 residenceInfo.status = item.status
             }
-
             residenceInfo.broker = item.userId.name
-
         })
-
         return residenceInfo
-
     } catch (e) {
         console.log(e.message)
     }
-
 }
 
 
-module.exports = { getResidenceLeads, getLeadsOnePhone }
+module.exports = { getResidenceLeads, getLeadsOnePhone, defaineSelfLead }
