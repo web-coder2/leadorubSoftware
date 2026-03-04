@@ -5,6 +5,7 @@ const crone = require('node-cron')
 const dotenv = require('dotenv')
 
 const leadsModel = require('../models/leadsModel.js')
+const usersModel = require('../models/usersModel.js')
 
 const { getSkorozvonToken, getLeadsToOneDay, getLeadTimeline, getLeadAudioUrls } = require('../services/skorozvonService.js')
 const { getResidenceLeads, getLeadsOnePhone } = require('../services/residenceService.js')

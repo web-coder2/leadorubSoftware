@@ -1,0 +1,34 @@
+const dayjs = require('dayjs')
+const axios = require('axios')
+const mongoose = require('mongoose')
+const crone = require('node-cron')
+const dotenv = require('dotenv')
+
+const usersModel = require('../models/usersModel')
+
+
+async function getAllUsers() {
+    try {
+        const usersList = await usersModel.find()
+        return usersList
+    } catch (e) {
+        console.log(e.message)
+    }
+}
+
+async function getUserIdByName(name) {
+    try {
+        const usersList = await usersModel.find()
+
+        let userObject = usersList.find((user) => {
+            return user.name === name
+        })
+
+        if (userObject) {
+            return userObject
+        }
+
+    } catch (e) {
+        console.log(e.message)
+    }
+}
