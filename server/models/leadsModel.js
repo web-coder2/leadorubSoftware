@@ -14,7 +14,8 @@ const leadsModel = new Schema({
         ref: 'usersModel',
         required: false // TODO: потом возможно поменять
     },
-    userName: String
+    userName: String,
+    countHold: Number,
 })
 
 module.exports = model('leadsModel', leadsModel);

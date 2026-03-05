@@ -23,12 +23,11 @@ async function upserUsersStatsToDB(userObject) {
 
         const oldEntry = await usersStats.findOneAndDelete({
             date: userObject.date,
-            email: userObject.phone,
-            userName: userObject.userName
+            email: userObject.email,
         })
 
         const newEntry = new usersStats({
-            userName: userObject.userName,
+            name: userObject.userName,
             countLeads: userObject.countLeads,
             countHolds: userObject.countHolds,
             sumHold: userObject.sumHold,

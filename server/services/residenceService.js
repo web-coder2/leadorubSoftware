@@ -63,12 +63,20 @@ async function getLeadsOnePhone(gte, lte, phone) {
         let residenceInfo = {
             price: 0,
             status: "created",
-            broker: undefined
+            broker: undefined,
+            countHold: 0,
         }
+
+        // Лидоруб сделал 1 трансфер и брокер с него сделал напрмиер 3 холда
+        // тогда в price будет например 3000 + 4000 + 5000
+        // status будет или hold или confirmed или refused
+        // а countHold будет 1 + 1 + 1
+
         leadsByPhone.forEach((item) => {
             if (allowedHolds.includes(item.status)) {
                 residenceInfo.price += item.price.offer
                 residenceInfo.status = item.status
+                residenceInfo.countHold += 1
             }
             residenceInfo.broker = item.userId.name
         })

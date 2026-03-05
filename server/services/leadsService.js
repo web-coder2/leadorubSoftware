@@ -45,7 +45,8 @@ async function upsertNewLeadsData(lead) {
             residenceStatus: lead.residenceStatus,
             statusOKK: lead.statusOKK,
             selfLead: lead.selfLead,
-            user: lead.user
+            user: lead.user,
+            countHold: lead.countHold
         })
 
         await newEntry.save()
@@ -98,7 +99,8 @@ function aggregateUsersLeads(array) {
             arrayObject[item.userName] = {
                 userName: item.userName,
                 countLeads: 1,
-                countHolds: allowedHolds.includes(item.residenceStatus) ? 1 : 0,
+                // countHolds: allowedHolds.includes(item.residenceStatus) ? 1 : 0,
+                countHolds: item.countHold || 0,
                 sumHold: item.price,
                 countTargets: item.statusOKK === true ? 1 : 0
             }

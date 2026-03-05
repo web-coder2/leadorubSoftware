@@ -40,7 +40,7 @@ async function setUsersStatsToDB(gte, lte) {
         if (user.rankName === "leadorub") {
             user.salary = calculateSalaryLeadorub(user)
         } else if (user.rankName === "holdorub") {
-            user.salary = calculateSalaryHoldorub(gte, lte, user)
+            user.salary = await calculateSalaryHoldorub(gte, lte, user)
         }
 
         let clearData = await calculateClearByUser(user, aggregatedUsersLeads.length)
@@ -55,6 +55,8 @@ async function setUsersStatsToDB(gte, lte) {
 
         user.scriptBonus = scriptBonus
         user.date = dayjs(gte).format('YYYY-MM-DD')
+
+        // console.log(user)
 
         const result = await upserUsersStatsToDB(user)
     }

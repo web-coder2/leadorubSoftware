@@ -36,10 +36,11 @@ async function setTransfersToDB(gte, lte) {
             statusOKK: false,
             selfLead: isSelfLead,
             user: userIdObject?._id ?? undefined,
-            userName: leadUser
+            userName: leadUser,
+            countHold: leadResidence.countHold
         }
 
-        console.log(leadInfo)
+        // console.log(leadInfo)
         
         const result = await upsertNewLeadsData(leadInfo)
     }

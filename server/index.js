@@ -10,7 +10,7 @@ const cors = require('cors');
 const { setTransfersCrone } = require('./crones/setTransfers.js')
 const { setUsersStatsCrone } = require('./crones/setUsersStats.js')
 
-// setTransfersCrone()
+setTransfersCrone()
 setUsersStatsCrone()
 
 dotenv.config()

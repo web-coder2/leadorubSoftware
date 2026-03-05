@@ -17,7 +17,7 @@ const usersStats = new Schema({
     user: {
         type: Schema.Types.ObjectId,
         ref: 'usersModel',
-        required: true
+        required: false
     }
 })
 
