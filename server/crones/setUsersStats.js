@@ -8,9 +8,9 @@ const leadsModel = require('../models/leadsModel.js')
 const usersModel = require('../models/usersModel.js')
 
 const { getSkorozvonCalls } = require('../services/skorozvonService.js')
-const { getLeadsToDate, aggregateUsersLeads } = require('../services/leadsService.js')
+const { getLeadsToDate, aggregateUsersLeads, calculateClearByUser } = require('../services/leadsService.js')
 const { calculateSalaryLeadorub, calculateSalaryHoldorub, calculateBonusToTargetsLeadorub, calculateBonusToClearPrice } = require('../services/salaryService.js')
-const { getAllUsers, getUserIdByName } = require('../services/usersService.js')
+const { getAllUsers, getUserIdByName, upserUsersStatsToDB } = require('../services/usersService.js')
 
 async function setUsersStatsToDB(gte, lte) {
     
@@ -31,8 +31,32 @@ async function setUsersStatsToDB(gte, lte) {
         }
 
         let fullUserObject = await getUserIdByName(user.userName)
-        
-        console.log(fullUserObject, user.userName)
+
+        if (fullUserObject) {
+            user.rankName = fullUserObject.rankName
+            user._id = fullUserObject._id
+        }
+
+        if (user.rankName === "leadorub") {
+            user.salary = calculateSalaryLeadorub(user)
+        } else if (user.rankName === "holdorub") {
+            user.salary = calculateSalaryHoldorub(gte, lte, user)
+        }
+
+        let clearData = await calculateClearByUser(user, aggregatedUsersLeads.length)
+
+        user.clear = clearData.clear
+        user.brokerSalary = clearData.brokerSalary
+
+        let scriptBonus = 0
+
+        scriptBonus += await calculateBonusToTargetsLeadorub(user)
+        scriptBonus += await calculateBonusToClearPrice(user)
+
+        user.scriptBonus = scriptBonus
+        user.date = dayjs(gte).format('YYYY-MM-DD')
+
+        const result = await upserUsersStatsToDB(user)
     }
 
 }

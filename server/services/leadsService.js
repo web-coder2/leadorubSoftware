@@ -71,12 +71,16 @@ async function getLeadsByUser(gte, lte, name) {
 
 function calculateClearByUser(userObject, countUsers) {
 
-    const brokerSalary = userObject.sumHold * 0.6 * 0.15
+    const brokerSalary = Math.floor(userObject.sumHold * 0.6 * 0.15)
     const minusOfBase = Math.floor(5000 / countUsers)
-    const allSumHold = userObject * 0.6
+    const allSumHold = userObject.sumHold * 0.6
 
-    const clear = allSumHold - minusOfBase - brokerSalary - userObject.salary
+    const clear = Math.floor(allSumHold - minusOfBase - brokerSalary - userObject.salary)
 
+    return {
+        clear: clear,
+        brokerSalary: brokerSalary
+    }
 }
 
 function aggregateUsersLeads(array) {

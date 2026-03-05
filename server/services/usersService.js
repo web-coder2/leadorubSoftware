@@ -5,6 +5,7 @@ const crone = require('node-cron')
 const dotenv = require('dotenv')
 
 const usersModel = require('../models/usersModel')
+const usersStats = require('../models/usersStats')
 
 
 async function getAllUsers() {
@@ -14,6 +15,41 @@ async function getAllUsers() {
     } catch (e) {
         console.log(e.message)
     }
+}
+
+async function upserUsersStatsToDB(userObject) {
+
+    try {
+
+        const oldEntry = await usersStats.findOneAndDelete({
+            date: userObject.date,
+            email: userObject.phone,
+            userName: userObject.userName
+        })
+
+        const newEntry = new usersStats({
+            userName: userObject.userName,
+            countLeads: userObject.countLeads,
+            countHolds: userObject.countHolds,
+            sumHold: userObject.sumHold,
+            countTargets: userObject.countTargets,
+            email: userObject.email,
+            countCalls: userObject.countCalls,
+            rankName: userObject.rankName,
+            salary: userObject.salary,
+            clear: userObject.clear,
+            brokerSalary: userObject.brokerSalary,
+            scriptBonus: userObject.scriptBonus,
+            date: userObject.date,
+            user: userObject._id
+        })
+
+        await newEntry.save()
+        
+    } catch (e) {
+        console.log(e.message)
+    }
+
 }
 
 async function getUserIdByName(name) {
@@ -33,4 +69,4 @@ async function getUserIdByName(name) {
     }
 }
 
-module.exports = { getAllUsers, getUserIdByName }
+module.exports = { getAllUsers, getUserIdByName, upserUsersStatsToDB }

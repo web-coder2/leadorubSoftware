@@ -36,7 +36,9 @@ function calculateBonusToClearPrice(userObject) {
     let bonusToClear
 
     if (userObject.clear > 0) {
-        bonusToClear = userObject.clear * 0.1
+        bonusToClear = Math.floor(userObject.clear * 0.1)
+    } else {
+        bonusToClear = 0
     }
 
     return bonusToClear

@@ -13,6 +13,7 @@ const usersStats = new Schema({
     bonus: Number,
     scriptBonus: Number,
     clear: Number,
+    brokerSalary: Number,
     user: {
         type: Schema.Types.ObjectId,
         ref: 'usersModel',
