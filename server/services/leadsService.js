@@ -56,6 +56,28 @@ async function upsertNewLeadsData(lead) {
 
 }
 
+async function getLeadsByUser(gte, lte, name) {
+
+    const usersLeadsToDate = await leadsModel.find({
+        date: {
+            $gte: dayjs(gte).format('YYYY-MM-DD'),
+            $lte: dayjs(lte).format('YYYY-MM-DD')
+        },
+        userName: name
+    })
+
+    return usersLeadsToDate
+}
+
+function calculateClearByUser(userObject, countUsers) {
+
+    const brokerSalary = userObject.sumHold * 0.6 * 0.15
+    const minusOfBase = Math.floor(5000 / countUsers)
+    const allSumHold = userObject * 0.6
+
+    const clear = allSumHold - minusOfBase - brokerSalary - userObject.salary
+
+}
 
 function aggregateUsersLeads(array) {
 
@@ -66,15 +88,15 @@ function aggregateUsersLeads(array) {
         if (arrayObject[item.userName]) {
             arrayObject[item.userName].countLeads++
             arrayObject[item.userName].countHolds += allowedHolds.includes(item.residenceStatus) ? 1 : 0
-            arrayObject[item.userName].sumHold += allowedHolds.includes(item.residenceStatus) ? item.price : 0
-            arrayObject[item.userName].targets += item.statusOKK === true ? 1 : 0
+            arrayObject[item.userName].sumHold += item.price
+            arrayObject[item.userName].countTargets += item.statusOKK === true ? 1 : 0
         } else {
             arrayObject[item.userName] = {
                 userName: item.userName,
                 countLeads: 1,
                 countHolds: allowedHolds.includes(item.residenceStatus) ? 1 : 0,
-                sumHold: allowedHolds.includes(item.residenceStatus) ? item.price : 0,
-                targets: item.statusOKK === true ? 1 : 0
+                sumHold: item.price,
+                countTargets: item.statusOKK === true ? 1 : 0
             }
         }
     })
@@ -83,4 +105,4 @@ function aggregateUsersLeads(array) {
 
 }
 
-module.exports = { upsertNewLeadsData, getLeadsToDate, aggregateUsersLeads }
+module.exports = { upsertNewLeadsData, getLeadsToDate, aggregateUsersLeads, getLeadsByUser, calculateClearByUser }

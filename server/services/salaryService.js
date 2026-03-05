@@ -1,0 +1,72 @@
+const dayjs = require('dayjs')
+const axios = require('axios')
+const mongoose = require('mongoose')
+const crone = require('node-cron')
+const dotenv = require('dotenv')
+
+
+const { getLeadsByUser } = require('../services/leadsService.js')
+
+
+function calculateSalaryLeadorub(userObject) {
+
+    const salaryToCalls = userObject.countCalls * 1
+    const salaryToTargets = userObject.countTargets * 250
+
+    const leadorubSalary = salaryToCalls + salaryToTargets
+    
+    return leadorubSalary
+}
+
+function calculateBonusToTargetsLeadorub(userObject) {
+
+    let bonusToTargets = 0
+
+    if (userObject.countTargets >= 3 && userObject.countTargets < 6) {
+        bonusToTargets = 200
+    } else if (userObject.countTargets > 6) {
+        userObject = 420
+    }
+
+    return bonusToTargets
+}
+
+function calculateBonusToClearPrice(userObject) {
+
+    let bonusToClear
+
+    if (userObject.clear > 0) {
+        bonusToClear = userObject.clear * 0.1
+    }
+
+    return bonusToClear
+}
+
+async function calculateSalaryHoldorub(gte, lte, userObject) {
+
+    const salaryToCalls = userObject.countCalls * 1
+
+    const leadsOfUsers = await getLeadsByUser(gte, lte, userObject.userName)
+    const allowedHolds = ['hold', 'confirmed', 'refused']
+    let salaryToHold = 0
+
+    const onlyHoldsArray = leadsOfUsers.filter((lead) => {
+        return allowedHolds.includes(lead.residenceStatus)
+    })
+
+    onlyHoldsArray.forEach((hold) => {
+
+        if (hold.selfLead === false) {
+            salaryToHold += 250
+        } else if (hold.selfLead === true) {
+            salaryToHold += hold.price * 15 / 100
+        }
+
+    })
+
+    const holdorubSalary = salaryToCalls + salaryToHold
+
+    return holdorubSalary
+}
+
+module.exports = { calculateSalaryLeadorub, calculateSalaryHoldorub, calculateBonusToTargetsLeadorub, calculateBonusToClearPrice }

@@ -38,3 +38,5 @@ router.post('/api/users/auth', async (req, res) => {
     }
 
 })
+
+module.exports = { router }

@@ -11,7 +11,8 @@ const usersStats = new Schema({
     sumHold: Number,
     salary: Number,
     bonus: Number,
-    scriptBonus: Number, 
+    scriptBonus: Number,
+    clear: Number,
     user: {
         type: Schema.Types.ObjectId,
         ref: 'usersModel',
