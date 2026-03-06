@@ -10,6 +10,8 @@ const cors = require('cors');
 const { setTransfersCrone } = require('./crones/setTransfers.js')
 const { setUsersStatsCrone } = require('./crones/setUsersStats.js')
 
+const usersRoute = require('./routes/usersRoute.js')
+
 setTransfersCrone()
 setUsersStatsCrone()
 
@@ -40,6 +42,8 @@ app.use(
 
 app.use(cookieParser());
 
+
+app.use(usersRoute)
 
 async function startConnectToDB() {
     try {
