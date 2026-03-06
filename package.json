@@ -12,6 +12,7 @@
   "author": "web-coder",
   "license": "ISC",
   "dependencies": {
+    "@element-plus/icons-vue": "^2.3.2",
     "concurrently": "^9.2.1"
   }
 }
