@@ -1,6 +1,6 @@
 <template>
     <div class="form-container">
-        <h3>Войти в кабинет</h3>
+        <h2 align="center">Войти в кабинет</h2>
         <el-input v-model="email" placeholder="Введите email" class="input" clearable></el-input>
         <el-input v-model="password" type="password" placeholder="Введите пароль" class="input" clearable></el-input>
         <el-button type="success" class="login-button" @click="login">Войти</el-button>
@@ -24,6 +24,14 @@
                     email: this.email,
                     password: this.password
                 })
+
+
+                let responseUser = response.data.user
+
+                if (responseUser.length !== 0) {
+                    localStorage.setItem('userObject', JSON.stringify({ email: this.email, password: this.password }));
+                    this.$router.push({ name: 'home' });
+                }
             }
         }
     }
