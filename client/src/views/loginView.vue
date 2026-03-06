@@ -3,7 +3,7 @@
         <h2 align="center">Войти в кабинет</h2>
         <el-input v-model="email" placeholder="Введите email" class="input" clearable></el-input>
         <el-input v-model="password" type="password" placeholder="Введите пароль" class="input" clearable></el-input>
-        <el-button type="success" class="login-button" @click="login">Войти</el-button>
+        <el-button type="info" class="login-button" @click="login">Войти</el-button>
     </div>
 </template>
   

@@ -6,7 +6,12 @@ const dotenv = require('dotenv')
 
 const leadsModel = require('../models/leadsModel.js')
 
-
+/**
+ * получить лиды за определные времени
+ * @param {*} gte 
+ * @param {*} lte 
+ * @returns
+ */
 async function getLeadsToDate(gte, lte) {
 
     try {

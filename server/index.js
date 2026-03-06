@@ -11,6 +11,7 @@ const { setTransfersCrone } = require('./crones/setTransfers.js')
 const { setUsersStatsCrone } = require('./crones/setUsersStats.js')
 
 const usersRoute = require('./routes/usersRoute.js')
+const leadsRoute = require('./routes/leadsRoute.js')
 
 setTransfersCrone()
 setUsersStatsCrone()
@@ -44,6 +45,7 @@ app.use(cookieParser());
 
 
 app.use(usersRoute)
+app.use(leadsRoute)
 
 async function startConnectToDB() {
     try {
