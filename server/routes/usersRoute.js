@@ -78,4 +78,26 @@ router.post('/api/users/delete', async (req, res) => {
     }
 })
 
+router.post('/api/users/edit', async (req, res) => {
+    try {
+
+        const { editUser } = req.body
+
+        const result = await usersModel.findOneAndUpdate(
+            { _id: editUser._id },
+            { $set: { ...editUser } },
+            { new: true }
+        );
+
+        res.status(200).json({
+            msg: 'user edited successfuly'
+        })
+
+    } catch (e) {
+        res.status(500).json({
+            msg: e.message
+        })
+    }
+})
+
 module.exports = router
