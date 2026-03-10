@@ -37,6 +37,16 @@ const router = createRouter({
       name: "salary",
       component: () => import('../views/salaryView.vue')
     },
+    {
+      path: '/salary',
+      name: "salary",
+      component: () => import('../views/salaryView.vue')
+    },
+    {
+      path: '/okk',
+      name: "okk",
+      component: () => import('../views/OKKView.vue')
+    },
   ],
 })
 

@@ -37,7 +37,8 @@ async function setTransfersToDB(gte, lte) {
             selfLead: isSelfLead,
             user: userIdObject?._id ?? undefined,
             userName: leadUser,
-            countHold: leadResidence.countHold
+            countHold: leadResidence.countHold,
+            isEdited: false,
         }
 
         // console.log(leadInfo)

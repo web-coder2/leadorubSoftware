@@ -16,6 +16,7 @@ const leadsModel = new Schema({
     },
     userName: String,
     countHold: Number,
+    isEdited: Boolean, // это фалжок лидии алексеевны (ОКК)
 })
 
 module.exports = model('leadsModel', leadsModel);

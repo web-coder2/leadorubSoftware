@@ -7,7 +7,6 @@ const { Router } = require('express');
 
 const leadsModel = require('../models/leadsModel')
 
-
 const { getLeadsToDate, aggregateUsersLeads, calculateClearByUser } = require('../services/leadsService.js')
 
 const router = Router()
@@ -25,6 +24,34 @@ router.get('/api/leads/get', async (req, res) => {
         })
     } catch (e) {
         // console.log(e.message)
+        res.status(500).json({
+            msg: e.message
+        })
+    }
+
+})
+
+router.post('/api/leads/upsert', async (req, res) => {
+    try {
+        const { leadsData } = req.body
+
+        for (let lead of leadsData) {
+            
+            const updateData = { ...lead };
+            delete updateData._id;
+
+            const result = await leadsModel.findOneAndUpdate(
+                { phone: lead.phone, date: lead.date },
+                { $set: updateData },
+                { upsert: true, returnDocument: 'after' }
+            );
+        }
+
+        res.status(200).json({
+            msg: 'leads updated successfuly'
+        })
+
+    } catch (e) {
         res.status(500).json({
             msg: e.message
         })

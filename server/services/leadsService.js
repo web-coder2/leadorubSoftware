@@ -34,6 +34,18 @@ async function getLeadsToDate(gte, lte) {
 async function upsertNewLeadsData(lead) {
 
     try {
+
+        const entryFromDB = await leadsModel.findOne({
+            date: lead.date,
+            phone: lead.phone,
+            userName: lead.userName
+        })
+
+        if (entryFromDB.isEdited === true) {
+            return 
+        }
+        
+
         const oldEntry = await leadsModel.findOneAndDelete({
             date: lead.date,
             phone: lead.phone,
@@ -51,7 +63,8 @@ async function upsertNewLeadsData(lead) {
             statusOKK: lead.statusOKK,
             selfLead: lead.selfLead,
             user: lead.user,
-            countHold: lead.countHold
+            countHold: lead.countHold,
+            isEdited: lead.isEdited
         })
 
         await newEntry.save()

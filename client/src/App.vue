@@ -51,6 +51,13 @@
           </el-icon>
           Зарплатная
         </el-menu-item>
+
+        <el-menu-item index="/okk" :to="'/okk'">
+          <el-icon>
+            <Star></Star>
+          </el-icon>
+          ОКК
+        </el-menu-item>
         
       </el-menu>
     </el-aside>
