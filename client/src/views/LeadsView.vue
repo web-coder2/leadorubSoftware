@@ -8,7 +8,7 @@
     </div>
 
     <div class="table-data">
-        <el-table :data="leadsTableData" style="width: 100%">
+        <el-table :data="currentData" style="width: 100%">
             <el-table-column prop="date" label="Дата"></el-table-column>
             <el-table-column prop="phone" label="Телефон"></el-table-column>
             <el-table-column prop="userName" label="Имя"></el-table-column>
@@ -30,6 +30,8 @@
             <el-table-column prop="price" label="Цена"></el-table-column>
             <el-table-column prop="countHold" label="Кол-во холдов"></el-table-column>
         </el-table>
+
+        <Pagination :tableData="leadsTableData" :rowsInPage="rowsInPage" @page-change="handlePageChange"></Pagination>
     </div>
 
 </template>
@@ -40,13 +42,20 @@
     import dayjs from 'dayjs'
     import axios from 'axios'
 
+    import Pagination from '../components/Pagination.vue'
+
     export default {
         data() {
             return {
                 gte: dayjs(new Date).format('YYYY-MM-DD'),
                 lte: dayjs(new Date).format('YYYY-MM-DD'),
-                leadsTableData: []
+                leadsTableData: [],
+                currentData: [],
+                rowsInPage: 5,
             }
+        },
+        components: {
+            Pagination
         },
         methods: {
             async fetchLeads() {
@@ -57,7 +66,7 @@
                     }
                 })
                 this.leadsTableData = response.data.leads
-                console.log(this.leadsTableData)
+                this.updateCurrentData(1, this.rowsInPage);
             },
             getTypeOfBadge(status) {
 
@@ -74,6 +83,14 @@
                 }
 
                 return type
+            },
+            handlePageChange({ page, rowsInPage }) {
+                this.rowsInPage = rowsInPage;
+                this.updateCurrentData(page, rowsInPage);
+            },
+            updateCurrentData(page, rowsInPage) {
+                const start = (page - 1) * rowsInPage;
+                this.currentData = this.leadsTableData.slice(start, start + rowsInPage);
             }
         }
     }
