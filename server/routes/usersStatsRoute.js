@@ -1,0 +1,116 @@
+const dayjs = require('dayjs')
+const axios = require('axios')
+const mongoose = require('mongoose')
+const crone = require('node-cron')
+const dotenv = require('dotenv')
+const { Router } = require('express');
+
+const usersStatsModel = require('../models/usersStats.js')
+
+
+const router = Router()
+
+
+router.get('/api/salary/get', async (req, res) => {
+
+    try {
+
+        const { gte, lte } = req.query
+
+        const usersStatsArray = []
+
+        const usersStatsData = await usersStatsModel.find({
+            date: {
+                $gte: gte,
+                $lte: lte
+            }
+        })
+
+        const todayStr = dayjs().format('YYYY-MM-DD')
+
+        const result = usersStatsData.map((item) => {
+            let newItem = { ...item.toObject() };
+            
+            // если выбран сегодня и 1 день
+            if (todayStr === dayjs(gte).format('YYYY-MM-DD') && gte === lte) {
+              newItem.scriptBonus = NaN;
+            } else {
+                // если выбран не сегодня или несколько дней
+            }
+          
+            return newItem;
+          });
+
+        let resultObject = {}
+
+        result.forEach((item) => {
+            if (resultObject[item.name]) {
+                resultObject[item.name].countCalls += item.countCalls
+                resultObject[item.name].countLeads += item.countLeads
+                resultObject[item.name].countTargets += item.countTargets
+                resultObject[item.name].countHolds += item.countHolds
+                resultObject[item.name].sumHold += item.sumHold
+                resultObject[item.name].salary += item.salary
+                resultObject[item.name].scriptBonus += item.scriptBonus
+                resultObject[item.name].clear += item.clear
+                resultObject[item.name].brokerSalary += item.brokerSalary
+            } else {
+                resultObject[item.name] = {
+                    name: item.name,
+                    email: item.email,
+                    countCalls: item.countCalls,
+                    countLeads: item.countLeads,
+                    countTargets: item.countTargets,
+                    countHolds: item.countHolds,
+                    sumHold: item.sumHold,
+                    salary: item.salary,
+                    scriptBonus: item.scriptBonus,
+                    clear: item.clear,
+                    brokerSalary: item.brokerSalary,
+                }
+            }
+        })
+
+        resultObject = Object.values(resultObject)
+
+        const total = {
+            name: 'Итого',
+            email: 'total@total.com',
+            countCalls: 0,
+            countLeads: 0,
+            countTargets: 0,
+            countHolds: 0,
+            sumHold: 0,
+            salary: 0,
+            scriptBonus: 0,
+            clear: 0,
+            brokerSalary: 0,
+        };
+
+        resultObject.forEach(item => {
+            total.countCalls += item.countCalls || 0;
+            total.countLeads += item.countLeads || 0;
+            total.countTargets += item.countTargets || 0;
+            total.countHolds += item.countHolds || 0;
+            total.sumHold += item.sumHold || 0;
+            total.salary += item.salary || 0;
+            total.scriptBonus += item.scriptBonus || 0;
+            total.clear += item.clear || 0;
+            total.brokerSalary += item.brokerSalary || 0;
+        });
+
+        resultObject.push(total)
+
+        res.status(200).json({
+            data: resultObject
+        })
+
+    } catch (e) {
+        res.status(500).json({
+            msg: e.message
+        })
+    }
+
+})
+
+module.exports = router

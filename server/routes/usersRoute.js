@@ -39,4 +39,43 @@ router.post('/api/users/auth', async (req, res) => {
 
 })
 
+
+router.get('/api/users/getList', async (req, res) => {
+    try {
+
+        const usersList = await usersModel.find()
+        
+        res.status(200).json({
+            data: usersList
+        })
+
+    } catch (e) {
+        console.log(e.message)
+        res.status(500).json({
+            msg: e.message
+        })
+    }
+})
+
+router.post('/api/users/delete', async (req, res) => {
+    try {
+
+        const { id } = req.body
+
+        const result = await usersModel.findOneAndDelete({
+            _id: id
+        })
+
+        res.status(200).json({
+            result: result
+        })
+
+    } catch (e) {
+        console.log(e.message)
+        res.status(500).json({
+            msg: e.message
+        })
+    }
+})
+
 module.exports = router

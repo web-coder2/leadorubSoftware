@@ -29,7 +29,7 @@
             </el-table-column>
             <el-table-column prop="price" label="Цена"></el-table-column>
             <el-table-column prop="countHold" label="Кол-во холдов"></el-table-column>
-          </el-table>
+        </el-table>
     </div>
 
 </template>

@@ -37,6 +37,20 @@
           </el-icon>
           Лиды
         </el-menu-item>
+
+        <el-menu-item index="/users" :to="'/users'">
+          <el-icon>
+            <View></View>
+          </el-icon>
+          Пользователи
+        </el-menu-item>
+
+        <el-menu-item index="/salary" :to="'/salary'">
+          <el-icon>
+            <Money></Money>
+          </el-icon>
+          Зарплатная
+        </el-menu-item>
         
       </el-menu>
     </el-aside>
@@ -50,7 +64,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { User, House, Avatar, Service, Star } from '@element-plus/icons-vue'
+import { User, House, Avatar, Service, Star, View, Money } from '@element-plus/icons-vue'
 
 const route = useRoute()
 
