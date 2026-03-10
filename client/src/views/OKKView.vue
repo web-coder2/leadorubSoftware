@@ -10,6 +10,8 @@
         </el-form-item>
     </el-form>
 
+    <p>При обновление сохранении данных лидов ставьте флажок к колонке "Проверен" тем лидам которые проверил иначе они перезапишутся и статус вернется к нецелевой неважно целевой он или нет</p>
+
     <el-table :data="tableData" style="width: 100%">
         <el-table-column prop="date" label="Дата"></el-table-column>
         <el-table-column prop="phone" label="Телефон"></el-table-column>
