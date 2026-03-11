@@ -7,7 +7,7 @@ const { Router } = require('express');
 
 const leadsModel = require('../models/leadsModel')
 
-const { getLeadsToDate, aggregateUsersLeads, calculateClearByUser } = require('../services/leadsService.js')
+const { getLeadsToDate, aggregateUsersLeads, calculateClearByUser, getLeadsByUser } = require('../services/leadsService.js')
 
 const router = Router()
 
@@ -75,6 +75,39 @@ router.post('/api/leads/upsert', async (req, res) => {
         })
     }
 
+})
+
+
+router.get('/api/leads/intensity', async (req, res) => {
+    try {
+
+        const { gte, userName } = req.query
+
+        const lte = dayjs(gte).endOf('week').format('YYYY-MM-DD')
+
+        let leads = await getLeadsByUser(gte, lte, userName)
+
+        console.log(leads)
+
+        let intensity = {}
+
+        leads.forEach((lead) => {
+            if (!intensity[lead.date]) {
+                intensity[lead.date] = [lead]
+            } else {
+                intensity[lead.date].push(lead)
+            }
+        })
+
+        res.status(200).json({
+            intensity
+        })
+
+    } catch (e) {
+        res.status(500).json({
+            msg: e.message
+        })
+    }
 })
 
 module.exports = router

@@ -3,9 +3,14 @@
         <h3>{{ title }} {{ userData.email }}</h3>
         <p>Ранк: {{ userData.rankName }}</p>
     </div>
+
+    <Statistics v-if="userData" :userName="userData.name"></Statistics>
+
 </template>
 
 <script>
+
+    import Statistics from '@/components/Statistics.vue';
 
     export default {
         data() {
@@ -13,6 +18,9 @@
                 title: "Личный кабинет",
                 userData: null
             }
+        },
+        components: {
+            Statistics
         },
         mounted() {
             const userObjectString = localStorage.getItem('userObject');

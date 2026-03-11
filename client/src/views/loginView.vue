@@ -31,7 +31,7 @@
                 let responseUser = response.user
 
                 if (responseUser.length !== 0) {
-                    localStorage.setItem('userObject', JSON.stringify({ email: this.email, password: this.password, rankName: responseUser[0].rankName }));
+                    localStorage.setItem('userObject', JSON.stringify({ email: this.email, password: this.password, rankName: responseUser[0].rankName, name: responseUser[0].name }));
                     this.$router.push({ name: 'home' });
                 }
             }
