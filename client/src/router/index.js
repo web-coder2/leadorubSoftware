@@ -50,29 +50,48 @@ const router = createRouter({
   ],
 })
 
+const userObjectString = localStorage.getItem('userObject');
+
 // Глобальный guard
 router.beforeEach((to, from, next) => {
-  const userObject = JSON.parse(localStorage.getItem('userObject')); // или другое название ключа
+  const userObject = JSON.parse(localStorage.getItem('userObject'));
 
-  // Проверяем, нужен ли авторизация
   if (to.meta.requiresAuth) {
-    // Проверка наличия email и password
     if (
       !userObject ||
       !userObject.email ||
-      !userObject.password ||
-      userObject.email === null ||
-      userObject.password === null ||
-      userObject.email === undefined ||
-      userObject.password === undefined
+      !userObject.password
     ) {
-      // Перенаправление на логин
-      next({ name: 'login' });
+      return next({ name: 'login' });
+    }
+  }
+
+  const rankName = userObject?.rankName;
+
+  if (!rankName) {
+    return next({ name: 'login' });
+  }
+
+  const adminRoutes = ['home', 'profile', 'leads', 'users', 'salary', 'okk', '']
+  const leadorubRoutes = ['home', 'profile', 'salary', 'login', '']
+  const holdorubRoutes = ['home', 'profile', 'salary', 'login', '']
+
+  if (rankName === 'admin') {
+    return next();
+  } else if (rankName === 'leadorub') {
+    if ( to.name &&  (leadorubRoutes.includes(to.name))) {
+      return next()
     } else {
-      next();
+      return next({ name: 'home' });
+    }
+  } else if (rankName === 'holdorub') {
+    if ( to.name && (holdorubRoutes.includes(to.name))) {
+      return next()
+    } else {
+      return next({ name: 'home' })
     }
   } else {
-    next();
+    return next({ name: 'login' });
   }
 });
 

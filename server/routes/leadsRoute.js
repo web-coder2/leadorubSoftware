@@ -87,8 +87,6 @@ router.get('/api/leads/intensity', async (req, res) => {
 
         let leads = await getLeadsByUser(gte, lte, userName)
 
-        console.log(leads)
-
         let intensity = {}
 
         leads.forEach((lead) => {

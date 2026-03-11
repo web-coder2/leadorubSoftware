@@ -1,33 +1,29 @@
 <template>
-    <p>Статистика по лидам Личный кабинет {{ userName }}</p>
-
-    <div style="margin-top: 50px; width: 50%;">
-        <div class="label"  v-for="(date, index) in leadsWeekData">
-            <p>Дата: <strong>{{ index }}</strong></p>
-            <p>Кол-во лидов <strong>{{ date.length }}</strong></p>
-            <el-progress :text-inside="true" :stroke-width="20" :percentage="getPercentFromAll(date.length)" :format="format" status="success"/>
-        </div>
-        <h4>Всего лидов за неделю: {{ allLeadsInWeek }}</h4>
+    <div>
+      <p style="font-size: 18px; font-weight: bold;">Статистика по лидам Личный кабинет {{ userName }}</p>
+  
+      <el-row :gutter="20" style="margin-top: 30px;">
+        <el-col :span="8" v-for="(date, index) in leadsWeekData" :key="index">
+          <el-card shadow="hover">
+            <div>
+              <p style="margin-bottom: 8px;">Дата: <strong>{{ index }} {{ getDayOfWeek(index) }}</strong></p>
+              <p style="margin-bottom: 8px;">Кол-во лидов: <strong>{{ date.length }}</strong></p>
+            </div>
+            <el-progress :text-inside="false" striped :percentage="getPercentFromAll(date.length)" :stroke-width="20" status="success"></el-progress>
+          </el-card>
+        </el-col>
+      </el-row>
+  
+      <h4 style="margin-top: 30px;">Всего лидов за неделю: {{ allLeadsInWeek }}</h4>
     </div>
-
 </template>
-
-<style scoped>
-.label {
-    display: flex;
-    justify-content: space-between;
-}
-
-.label p {
-    color: var(--el-text-color-secondary);
-    margin: 16px 0 8px 0;
-    font-size: 15px;
-}
-</style>
 
 <script>
 
-    import dayjs from 'dayjs';
+    import dayjs from 'dayjs'
+    import 'dayjs/locale/ru'
+
+    dayjs.locale('ru')
 
     export default {
         data() {
@@ -61,6 +57,9 @@
             getPercentFromAll(countLeads) {
                 return Math.round(countLeads / this.allLeadsInWeek * 100)
             },
+            getDayOfWeek(date) {
+                return dayjs(date).format('dddd')
+            }
         },
         async beforeMount() {
             await this.getLeadIntensity()
