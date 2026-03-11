@@ -84,9 +84,12 @@
                     users: this.selectedUsers
                 };
 
-                const response = await axios.get('http://localhost:3000/api/leads/get', { params });
+                const response = await this.$store.dispatch('getDataList', {
+                    col: 'api/leads/get',
+                    params: params
+                })
 
-                this.leadsTableData = response.data.leads;
+                this.leadsTableData = response.leads;
                 this.updateCurrentData(1, this.rowsInPage);
             },
             async getUsersList() {

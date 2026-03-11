@@ -46,13 +46,14 @@
         },
         methods: {
             async getSalaryData() {
-                const response = await axios.get('http://localhost:3000/api/salary/get', {
+                const response = await this.$store.dispatch('getDataList', {
+                    col: 'api/salary/get',
                     params: {
                         gte: this.gte,
                         lte: this.lte
                     }
                 })
-                this.salaryTableData = response.data.data
+                this.salaryTableData = response.data
             }
         },
         async beforeMount() {

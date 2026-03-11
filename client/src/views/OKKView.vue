@@ -105,16 +105,25 @@
     },
     methods: {
         async fetchLeads() {
-            const response = await axios.get('http://localhost:3000/api/leads/get', {
+            const response = await this.$store.dispatch('getDataList', {
+                col: 'api/leads/get',
                 params: {
-                    gte: this.gte
+                    gte: this.gte,
+                    lte: this.gte
                 }
             })
-            this.tableData = response.data.leads
+
+            console.log(response)
+
+            this.tableData = response.leads
         },
         async saveLeadsData() {
-            const response = await axios.post('http://localhost:3000/api/leads/upsert', {
-                leadsData: this.tableData
+
+            const response = await this.$store.dispatch('createDataList', {
+                col: "api/leads/upsert",
+                data: {
+                    leadsData: this.tableData
+                }
             })
 
             ElMessage({

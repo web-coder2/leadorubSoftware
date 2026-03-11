@@ -60,26 +60,28 @@
         },
         methods: {
             async getUsersList() {
-                const response = await axios.get('http://localhost:3000/api/users/getList')
+                console.log('this:', this);
+                console.log('this.$store:', this.$store);
 
-                this.usersArray = response.data.data
+                const response = await this.$store.dispatch('getDataList', {
+                    col: 'api/users/getList',
+                });
+
+                this.usersArray = response.data;
             },
             async deleteUser(id) {
                 try {
-
-                    const response = await axios.post('http://localhost:3000/api/users/delete', {
-                        id: id
+                    const response = await this.$store.dispatch('createDataList', {
+                        col: 'api/users/delete',
+                        data: {
+                            id: id
+                        }
                     })
-
-                    console.log(response)
-
                     ElMessage({
                         message: 'Пользователь успешно удален',
                         type: 'success',
                     });
-
                     await this.getUsersList()
-
                 } catch (e) {
                     console.log(e.message)
                 }
@@ -89,8 +91,11 @@
                 this.isShowModalEditUser = true
             },
             async saveUser() {
-                const result = await axios.post('http://localhost:3000/api/users/edit', {
-                    editUser: this.editedUser
+                const result = await this.$store.dispatch('createDataList', {
+                    col: 'api/users/edit',
+                    data: {
+                        editUser: this.editedUser
+                    }
                 })
                 this.isShowModalEditUser = false
 

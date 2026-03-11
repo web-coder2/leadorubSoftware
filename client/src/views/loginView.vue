@@ -20,13 +20,15 @@
         },
         methods: {
             async login() {
-                const response = await axios.post('http://localhost:3000/api/users/auth', {
-                    email: this.email,
-                    password: this.password
+                const response = await this.$store.dispatch('createDataList', {
+                    col: 'api/users/auth',
+                    data: {
+                        email: this.email,
+                        password: this.password
+                    }
                 })
 
-
-                let responseUser = response.data.user
+                let responseUser = response.user
 
                 if (responseUser.length !== 0) {
                     localStorage.setItem('userObject', JSON.stringify({ email: this.email, password: this.password, rankName: responseUser[0].rankName }));
