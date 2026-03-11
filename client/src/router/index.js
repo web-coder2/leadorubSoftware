@@ -50,49 +50,20 @@ const router = createRouter({
   ],
 })
 
-const userObjectString = localStorage.getItem('userObject');
-
 // Глобальный guard
 router.beforeEach((to, from, next) => {
   const userObject = JSON.parse(localStorage.getItem('userObject'));
+  const authorized = !!userObject; // true, если есть пользователь
 
-  if (to.meta.requiresAuth) {
-    if (
-      !userObject ||
-      !userObject.email ||
-      !userObject.password
-    ) {
-      return next({ name: 'login' });
-    }
+  // Если пользователь не авторизован и он не идет на страницу логина
+  if (!authorized && to.path !== '/login') {
+    next('/login');
+    return;
   }
 
-  const rankName = userObject?.rankName;
-
-  if (!rankName) {
-    return next({ name: 'login' });
-  }
-
-  const adminRoutes = ['home', 'profile', 'leads', 'users', 'salary', 'okk', '']
-  const leadorubRoutes = ['home', 'profile', 'salary', 'login', '']
-  const holdorubRoutes = ['home', 'profile', 'salary', 'login', '']
-
-  if (rankName === 'admin') {
-    return next();
-  } else if (rankName === 'leadorub') {
-    if ( to.name &&  (leadorubRoutes.includes(to.name))) {
-      return next()
-    } else {
-      return next({ name: 'home' });
-    }
-  } else if (rankName === 'holdorub') {
-    if ( to.name && (holdorubRoutes.includes(to.name))) {
-      return next()
-    } else {
-      return next({ name: 'home' })
-    }
-  } else {
-    return next({ name: 'login' });
-  }
+  // Во всех остальных случаях — разрешаем переход
+  next();
 });
+
 
 export default router

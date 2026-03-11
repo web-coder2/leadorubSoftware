@@ -1,64 +1,13 @@
 <template>
   <el-container style="height: 100vh;">
     <el-aside v-if="showSidebar" width="200px" style="height: 100vh; background-color: #2d2d2d;">
-      <el-menu
-        default-active="1"
-        background-color="transparent"
-        text-color="#fff"
-        active-text-color="#ffd04b"
-        router
-        style="height: 100%; display: flex; flex-direction: column; justify-content: flex-start;"
-      >
-
-        <el-menu-item index="/login" :to="'/login'">
-          <el-icon>
-            <Avatar></Avatar>
-          </el-icon>
-          Выйти
-        </el-menu-item>
-
-        <el-menu-item index="/profile" :to="'/profile'">
-          <el-icon>
-            <User></User>
-          </el-icon>
-          Профиль
-        </el-menu-item>
-
-        <el-menu-item index="/" :to="'/'">
-          <el-icon>
-            <House></House>
-          </el-icon>
-          Главная
-        </el-menu-item>
-
-        <el-menu-item index="/leads" :to="'/leads'">
-          <el-icon>
-            <Service></Service>
-          </el-icon>
-          Лиды
-        </el-menu-item>
-
-        <el-menu-item index="/users" :to="'/users'">
-          <el-icon>
-            <View></View>
-          </el-icon>
-          Пользователи
-        </el-menu-item>
-
-        <el-menu-item index="/salary" :to="'/salary'">
-          <el-icon>
-            <Money></Money>
-          </el-icon>
-          Зарплатная
-        </el-menu-item>
-
-        <el-menu-item index="/okk" :to="'/okk'">
-          <el-icon>
-            <Star></Star>
-          </el-icon>
-          ОКК
-        </el-menu-item>
-        
+      <el-menu default-active="1" background-color="transparent" text-color="#fff" active-text-color="#ffd04b" router style="height: 100%; display: flex; flex-direction: column; justify-content: flex-start;">
+        <template v-for="(item, index) in menuItems" :key="index">
+          <el-menu-item v-if="!item.condition || item.condition()" :index="item.path" :to="item.path">
+            <el-icon><component :is="item.icon"></component></el-icon>
+            {{ item.label }}
+          </el-menu-item>
+        </template>
       </el-menu>
     </el-aside>
 
@@ -73,7 +22,61 @@ import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { User, House, Avatar, Service, Star, View, Money } from '@element-plus/icons-vue'
 
+// Получение route
 const route = useRoute()
 
+// Условие отображения сайдбара
 const showSidebar = computed(() => route.path !== '/login')
+
+// Получение rankName из localStorage
+const userObject = JSON.parse(localStorage.getItem('userObject'));
+const rankName = userObject?.rankName || '';
+
+console.log(rankName)
+
+// Массив вкладок
+const menuItems = [
+  {
+    label: 'Выйти',
+    path: '/login',
+    icon: Avatar,
+    condition: null, // всегда показывать
+  },
+  {
+    label: 'Профиль',
+    path: '/profile',
+    icon: User,
+    condition: null,
+  },
+  {
+    label: 'Главная',
+    path: '/',
+    icon: House,
+    condition: null,
+  },
+  {
+    label: 'Лиды',
+    path: '/leads',
+    icon: Service,
+    condition: () => rankName === 'admin',
+  },
+  {
+    label: 'Пользователи',
+    path: '/users',
+    icon: View,
+    condition: () => rankName === 'admin',
+  },
+  {
+    label: 'Зарплатная',
+    path: '/salary',
+    icon: Money,
+    condition: null,
+  },
+  {
+    label: 'ОКК',
+    path: '/okk',
+    icon: Star,
+    condition: () => rankName === 'admin',
+  },
+]
 </script>

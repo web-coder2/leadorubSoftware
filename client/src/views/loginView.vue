@@ -2,7 +2,7 @@
     <div class="form-container">
         <h2 align="center">Войти в кабинет</h2>
         <el-input v-model="email" placeholder="Введите email" class="input" clearable></el-input>
-        <el-input v-model="password" type="password" placeholder="Введите пароль" class="input" clearable></el-input>
+        <el-input v-model="password" @keyup.enter="login" type="password" placeholder="Введите пароль" class="input" clearable></el-input>
         <el-button type="info" class="login-button" @click="login">Войти</el-button>
     </div>
 </template>
@@ -35,6 +35,10 @@
                     this.$router.push({ name: 'home' });
                 }
             }
+        },
+        beforeMount() {
+            // чтобы когда появился на логинской тсранцие то локалсторадж убрался и rankName тоже
+            localStorage.clear();
         }
     }
 </script>
