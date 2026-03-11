@@ -41,8 +41,10 @@ async function upsertNewLeadsData(lead) {
             userName: lead.userName
         })
 
-        if (entryFromDB.isEdited === true) {
-            return 
+        if (entryFromDB) {
+            if (entryFromDB.isEdited === true) {
+                return 
+            }
         }
         
 
@@ -70,7 +72,7 @@ async function upsertNewLeadsData(lead) {
         await newEntry.save()
 
     } catch (e) {
-        console.log(e.message)
+        console.log(e.message, lead.phone)
     }
 
 }

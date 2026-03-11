@@ -12,24 +12,42 @@ const { getLeadsToDate, aggregateUsersLeads, calculateClearByUser } = require('.
 const router = Router()
 
 router.get('/api/leads/get', async (req, res) => {
-
     try {
-
         const { gte, lte } = req.query
 
-        const leadsData = await getLeadsToDate(gte, lte)
+        const statuses = req.query['statuses[]'];
+        const users = req.query['users[]']
+        
+        console.log(statuses, users)
 
+        const filter = {
+            date: {
+                $gte: gte,
+                $lte: lte
+            }
+        }
+  
+        if (users) {
+            const usersFilter = Array.isArray(users) ? users : [users];
+            filter.userName = { $in: usersFilter };
+        }
+  
+        if (statuses) {
+            const statusesFilter = Array.isArray(statuses) ? statuses : [statuses];
+            filter.residenceStatus = { $in: statusesFilter };
+        }
+  
+        const leadsData = await leadsModel.find(filter);
+  
         res.status(200).json({
             leads: leadsData
-        })
+        });
     } catch (e) {
-        // console.log(e.message)
         res.status(500).json({
             msg: e.message
-        })
+        });
     }
-
-})
+});
 
 router.post('/api/leads/upsert', async (req, res) => {
     try {

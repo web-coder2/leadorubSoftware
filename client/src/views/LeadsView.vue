@@ -4,7 +4,20 @@
     <div class="form-filter">
         <el-input type="date" v-model="gte"></el-input>
         <el-input type="date" v-model="lte"></el-input>
-        <el-button @click="fetchLeads" type="info" style="margin-top: 10px;">Применить</el-button>
+
+        <el-select style="margin-top:10px" v-model="selectedStatuses" multiple placeholder="Выбрать статус">
+            <el-option v-for="(status) in statusesArray" :label="status" :value="status"></el-option>
+        </el-select>
+
+        <el-select style="margin-top:10px" v-model="selectedUsers" multiple placeholder="Выбрать юзера">
+            <el-option v-for="(user) in usersArray" :label="user.name" :value="user.name"></el-option>
+        </el-select>
+
+        <div inline>
+            <el-button @click="fetchLeads" type="info" style="margin-top: 10px;">Применить</el-button>
+            <el-button @click="resetFitlers" type="warning" style="margin-top: 10px">Сбросить</el-button>
+        </div>
+
     </div>
 
     <div class="table-data">
@@ -22,6 +35,7 @@
                     <p>{{ row.selfLead ? 'Сам' : 'На брокера' }}</p>
                 </template>
             </el-table-column>
+            <el-table-column prop="broker" label="Брокер"></el-table-column>
             <el-table-column prop="residenceStatus" label="Статус">
                 <template #default="{ row }">
                     <el-badge :value="row.residenceStatus" :type="getTypeOfBadge(row.residenceStatus)"></el-badge>
@@ -52,6 +66,10 @@
                 leadsTableData: [],
                 currentData: [],
                 rowsInPage: 5,
+                statusesArray: ['hold', 'confirmed', 'refused', 'invalid', 'breaked', 'created'],
+                usersArray: [],
+                selectedStatuses: null,
+                selectedUsers: null,
             }
         },
         components: {
@@ -59,14 +77,21 @@
         },
         methods: {
             async fetchLeads() {
-                const response = await axios.get('http://localhost:3000/api/leads/get', {
-                    params: {
-                        gte: this.gte,
-                        lte: this.lte
-                    }
-                })
-                this.leadsTableData = response.data.leads
+                const params = {
+                    gte: this.gte,
+                    lte: this.lte,
+                    statuses: this.selectedStatuses,
+                    users: this.selectedUsers
+                };
+
+                const response = await axios.get('http://localhost:3000/api/leads/get', { params });
+
+                this.leadsTableData = response.data.leads;
                 this.updateCurrentData(1, this.rowsInPage);
+            },
+            async getUsersList() {
+                let response = await axios.get('http://localhost:3000/api/users/getList')
+                this.usersArray = response.data.data
             },
             getTypeOfBadge(status) {
 
@@ -91,7 +116,18 @@
             updateCurrentData(page, rowsInPage) {
                 const start = (page - 1) * rowsInPage;
                 this.currentData = this.leadsTableData.slice(start, start + rowsInPage);
+            },
+            async resetFitlers() {
+                this.selectedStatuses = null
+                this.selectedUsers = null
+                this.gte = dayjs().format('YYYY-MM-DD')
+                this.lte = dayjs().format('YYYY-MM-DD')
+
+                await this.fetchLeads()
             }
+        },
+        async beforeMount() {
+            await this.getUsersList()
         }
     }
 

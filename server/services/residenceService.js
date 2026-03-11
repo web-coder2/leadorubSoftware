@@ -67,6 +67,9 @@ async function getLeadsOnePhone(gte, lte, phone) {
             countHold: 0,
         }
 
+        let currentStatus = ""  // текущий статус во время итераций
+        let holdStatus = null  // финалбьный статус если в какойто итеарции будет hold, confirmed или refused
+
         // Лидоруб сделал 1 трансфер и брокер с него сделал напрмиер 3 холда
         // тогда в price будет например 3000 + 4000 + 5000
         // status будет или hold или confirmed или refused
@@ -75,10 +78,19 @@ async function getLeadsOnePhone(gte, lte, phone) {
         leadsByPhone.forEach((item) => {
             if (allowedHolds.includes(item.status)) {
                 residenceInfo.price += item.price.offer
-                residenceInfo.status = item.status
+                // residenceInfo.status = item.status
                 residenceInfo.countHold += 1
+                // финальный статус
+                holdStatus = item.status
+            } else {
+                // residenceInfo.status = item.status
+                // изменяем текущий статус
+                currentStatus = item.status
             }
             residenceInfo.broker = item.userId.name
+
+            residenceInfo.status = holdStatus !== null ? holdStatus : currentStatus
+
         })
         return residenceInfo
     } catch (e) {
