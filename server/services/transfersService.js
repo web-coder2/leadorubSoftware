@@ -20,7 +20,7 @@ async function mergeTransferToOKK(gte, lte, phone) {
     let statusOKK = false
 
     if (leadInfo) {
-        statusOKK = leadInfo[0].statusOKK
+        statusOKK = leadInfo[0]?.statusOKK
     } else {
         statusOKK = false
     }

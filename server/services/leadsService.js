@@ -43,7 +43,20 @@ async function upsertNewLeadsData(lead) {
 
         if (entryFromDB) {
             if (entryFromDB.isEdited === true) {
-                return 
+                await leadsModel.updateOne(
+                    { _id: entryFromDB._id },
+                    {
+                        $set: {
+                            price: lead.price,
+                            audioArray: lead.audioArray,
+                            residenceStatus: lead.residenceStatus,
+                            statusOKK: lead.statusOKK,
+                            selfLead: lead.selfLead,
+                            countHold: lead.countHold,
+                        }
+                    }
+                );
+                return; 
             }
         }
         

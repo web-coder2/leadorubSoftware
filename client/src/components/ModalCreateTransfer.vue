@@ -4,10 +4,15 @@
 
 
 
-    <el-dialog title="Редактировать пользователя" v-model="isShowModal" width="500px">
+    <el-dialog title="Добавить лид в БД" v-model="isShowModal" width="500px">
+
+        <p>Если в поле "Лидоруб" будет пусто или не ваше имя то впишите его правлиьно</p>
 
         <el-form :model="transferObject" label-width="120px">
-            <el-form-item label="Телефон" prop="phone">
+            <el-form-item label="Лидоруб" prop="userName">
+                <el-input v-model="transferObject.userName"></el-input>
+            </el-form-item>
+            <el-form-item label="Дата" prop="phone">
                 <el-input v-model="transferObject.date" type="date"></el-input>
             </el-form-item>
             <el-form-item label="Телефон" prop="phone">

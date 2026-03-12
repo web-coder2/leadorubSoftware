@@ -44,7 +44,7 @@ async function updateUsersTransfers(gte, lte) {
 function updateTransfersCrone() {
     const croneHour = '0 * * * *'
 
-    updateUsersTransfers(new Date('2026-03-11'), new Date('2026-03-11'))
+    updateUsersTransfers(new Date(), new Date())
   
     // crone.schedule(croneHour, () => {
     //     updateUsersTransfers(new Date(), new Date())

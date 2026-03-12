@@ -6,17 +6,17 @@
         <el-input type="date" v-model="gte"></el-input>
         <el-input type="date" v-model="lte"></el-input>
 
-        <el-select style="margin-top:10px" v-model="selectedStatuses" multiple placeholder="Выбрать статус">
+        <el-select v-if="activeTab === 'leads'" style="margin-top:10px" v-model="selectedStatuses" multiple placeholder="Выбрать статус">
           <el-option v-for="status in statusesArray" :label="status" :value="status" :key="status"></el-option>
         </el-select>
 
-        <el-select style="margin-top:10px" v-model="selectedUsers" multiple placeholder="Выбрать юзера">
+        <el-select v-if="activeTab === 'leads'" style="margin-top:10px" v-model="selectedUsers" multiple placeholder="Выбрать юзера">
           <el-option v-for="user in usersArray" :label="user.name" :value="user.name" :key="user._id"></el-option>
         </el-select>
 
         <div style="display: flex; gap: 10px; margin-top: 10px;">
-          <el-button @click="fetchLeads" type="info">Применить</el-button>
-          <el-button @click="resetFilters" type="warning">Сбросить</el-button>
+          <el-button @click="fetchLeads(); fetchUsersTrasnfers()" type="info">Применить</el-button>
+          <el-button @click="resetFilters(); fetchUsersTrasnfers()" type="warning">Сбросить</el-button>
         </div>
       </div>
   
@@ -62,7 +62,11 @@
                 <el-table-column prop="broker" label="Брокер"></el-table-column>
                 <el-table-column prop="countHold" label="Кол-во холдов"></el-table-column>
                 <el-table-column prop="price" label="Цена"></el-table-column>
-                <el-table-column prop="residenceStatus" label="статус"></el-table-column>
+                <el-table-column prop="residenceStatus" label="статус">
+                  <template #default="{ row }">
+                    <el-badge :value="row.residenceStatus" :type="getTypeOfBadge(row.residenceStatus)"></el-badge>
+                  </template>
+                </el-table-column>
                 <el-table-column prop="selfTransfer" label="сам перевел"></el-table-column>
                 <el-table-column prop="statusOKK" label="ОКК"></el-table-column>
               </el-table>
@@ -100,7 +104,6 @@
         if (tab.name === 'leads') {
             this.fetchLeads()
         } else if (tab.name === 'another') {
-            console.log(12312321)
             this.fetchUsersTrasnfers()
         }
       },
@@ -119,9 +122,6 @@
   
         this.leadsTableData = response.leads
         this.updateCurrentData(1, this.rowsInPage)
-
-        await this.fetchUsersTrasnfers()
-
       },
       async fetchUsersTrasnfers() {
 
