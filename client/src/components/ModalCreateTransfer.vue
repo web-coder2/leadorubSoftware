@@ -81,6 +81,11 @@
 
                 } catch (e) {
                     console.log(e.message)
+
+                    ElMessage({
+                        message: 'Ошбика при добавление трансфера',
+                        type: 'error',
+                    });
                 }
             }
         }

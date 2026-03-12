@@ -56,8 +56,6 @@ async function setUsersStatsToDB(gte, lte) {
         user.scriptBonus = scriptBonus
         user.date = dayjs(gte).format('YYYY-MM-DD')
 
-        // console.log(user)
-
         const result = await upserUsersStatsToDB(user)
     }
 

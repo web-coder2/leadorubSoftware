@@ -27,7 +27,8 @@
         </el-table-column>
         <el-table-column prop="statusOKK" label="Статус ОКК">
             <template #default="{ row }">
-                <p>{{ row.statusOKK ? 'Целевой' : 'Нецелевой' }}</p>
+                <p v-if="row.statusOKK === false">Нецелевой</p>
+                <strong v-if="row.statusOKK === true">Целевой</strong>
             </template>
         </el-table-column>
         <el-table-column prop="selfLead" label="Сам перевел">
@@ -108,12 +109,10 @@
             const response = await this.$store.dispatch('getDataList', {
                 col: 'api/leads/get',
                 params: {
-                    gte: this.gte,
-                    lte: this.gte
+                    gte: dayjs(this.gte).format('YYYY-MM-DD'),
+                    lte: dayjs(this.gte).format('YYYY-MM-DD')
                 }
             })
-
-            console.log(response)
 
             this.tableData = response.leads
         },
