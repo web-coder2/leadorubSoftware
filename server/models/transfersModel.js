@@ -13,7 +13,14 @@ const transfersModel = new Schema({
     },
     phone: String,
     client: String,
-    description: String
+    description: String,
+    // дальше идут свойства которые будут записываться скриптом
+    statusOKK: Boolean,
+    residenceStatus: String,
+    broker: String,
+    price: Number,
+    countHold: Number,
+    selfTransfer: Boolean,
 })
 
 module.exports = model('transfersModel', transfersModel);

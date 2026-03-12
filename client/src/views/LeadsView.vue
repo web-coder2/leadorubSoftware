@@ -59,8 +59,13 @@
                 <el-table-column prop="userName" label="Имя"></el-table-column>
                 <el-table-column prop="client" label="Клиент"></el-table-column>
                 <el-table-column prop="description" label="Описание"></el-table-column>
+                <el-table-column prop="broker" label="Брокер"></el-table-column>
+                <el-table-column prop="countHold" label="Кол-во холдов"></el-table-column>
+                <el-table-column prop="price" label="Цена"></el-table-column>
+                <el-table-column prop="residenceStatus" label="статус"></el-table-column>
+                <el-table-column prop="selfTransfer" label="сам перевел"></el-table-column>
+                <el-table-column prop="statusOKK" label="ОКК"></el-table-column>
               </el-table>
-
         </el-tab-pane>
       </el-tabs>
     </div>

@@ -9,14 +9,16 @@ const cors = require('cors');
 
 const { setTransfersCrone } = require('./crones/setTransfers.js')
 const { setUsersStatsCrone } = require('./crones/setUsersStats.js')
+const { updateTransfersCrone } = require('./crones/updateUsersTransfers.js')
 
 const usersRoute = require('./routes/usersRoute.js')
 const leadsRoute = require('./routes/leadsRoute.js')
 const usersStatsRoute = require('./routes/usersStatsRoute.js')
 const transfersRoute = require('./routes/transfersRoute.js')
 
-setTransfersCrone()
-setUsersStatsCrone()
+// setTransfersCrone()
+// setUsersStatsCrone()
+updateTransfersCrone()
 
 dotenv.config()
 

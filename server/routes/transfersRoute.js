@@ -25,7 +25,7 @@ router.post('/api/transfers/create', async (req, res) => {
             date: transferObject.date,
             userName: transferObject.userName,
             userId: userId._id,
-            phone: transferObject.phone,
+            phone: transferObject.phone.replace(/\D/g, ''),
             client: transferObject.client,
             description: transferObject.description
         });
