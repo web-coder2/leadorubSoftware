@@ -13,9 +13,10 @@ const { setUsersStatsCrone } = require('./crones/setUsersStats.js')
 const usersRoute = require('./routes/usersRoute.js')
 const leadsRoute = require('./routes/leadsRoute.js')
 const usersStatsRoute = require('./routes/usersStatsRoute.js')
+const transfersRoute = require('./routes/transfersRoute.js')
 
-// setTransfersCrone()
-// setUsersStatsCrone()
+setTransfersCrone()
+setUsersStatsCrone()
 
 dotenv.config()
 
@@ -48,6 +49,7 @@ app.use(cookieParser());
 app.use(usersRoute)
 app.use(leadsRoute)
 app.use(usersStatsRoute)
+app.use(transfersRoute)
 
 async function startConnectToDB() {
     try {

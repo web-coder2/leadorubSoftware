@@ -49,8 +49,8 @@
                 const response = await this.$store.dispatch('getDataList', {
                     col: 'api/salary/get',
                     params: {
-                        gte: this.gte,
-                        lte: this.lte
+                        gte: dayjs(this.gte).format('YYYY-MM-DD'),
+                        lte: dayjs(this.lte).format('YYYY-MM-DD')
                     }
                 })
                 this.salaryTableData = response.data
