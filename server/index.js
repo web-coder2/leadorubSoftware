@@ -23,7 +23,7 @@ const transfersRoute = require('./routes/transfersRoute.js')
 dotenv.config()
 
 const app = express()
-const PORT = 3000
+const PORT = 8000
 
 const MONGO_URL = process.env.DATABASE_URL
 const MONGO_USER = process.env.DATABASE_USERNAME
