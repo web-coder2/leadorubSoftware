@@ -8,6 +8,7 @@ const { Router } = require('express');
 const leadsModel = require('../models/leadsModel')
 
 const { getLeadsToDate, aggregateUsersLeads, calculateClearByUser, getLeadsByUser } = require('../services/leadsService.js')
+const { getUserIdByName } = require('../services/usersService')
 
 const router = Router()
 
@@ -67,6 +68,44 @@ router.post('/api/leads/upsert', async (req, res) => {
 
         res.status(200).json({
             msg: 'leads updated successfuly'
+        })
+
+    } catch (e) {
+        res.status(500).json({
+            msg: e.message
+        })
+    }
+
+})
+
+// сдесь будут добавляся лиды системеные но созданые админом если вдруг не получилось спарсить с скорозвона ебучего
+router.post('/api/leads/create', async (req, res) => {
+
+    try {
+
+        const { leadObject } = req.body
+
+        const userId = await getUserIdByName(leadObject.name)
+
+        const newLeadObject = leadsModel({
+            date: leadObject.date,
+            broker: leadObject.broker,
+            price: leadObject.price,
+            phone: leadObject.phone,
+            audioArray: leadObject.audioArray,
+            residenceStatus: leadObject.residenceStatus,
+            statusOKK: leadObject.statusOKK,
+            selfLead: leadObject.selfLead,
+            user: userId ?? null,
+            userName: leadObject.userName,
+            countHold: leadObject.countHold,
+            isEdited: true,
+        })
+
+        const result = await newLeadObject.save()
+
+        res.status(200).json({
+            msg: 'lead created successfuly'
         })
 
     } catch (e) {

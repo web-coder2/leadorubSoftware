@@ -10,7 +10,9 @@
         </el-form-item>
     </el-form>
 
-    <p>При обновление сохранении данных лидов ставьте флажок к колонке "Проверен" тем лидам которые проверил иначе они перезапишутся и статус вернется к нецелевой неважно целевой он или нет</p>
+    <!-- <p>При обновление сохранении данных лидов ставьте флажок к колонке "Проверен" тем лидам которые проверил иначе они перезапишутся и статус вернется к нецелевой неважно целевой он или нет</p> -->
+
+    <el-button style="margin-bottom: 10px" plain type="warning" @click="isManualeShow = true">Открыть памятку</el-button>
 
     <el-table :data="tableData" style="width: 100%">
         <el-table-column prop="date" label="Дата"></el-table-column>
@@ -73,6 +75,11 @@
         <audio ref="audio" :src="currentAudioUrl"></audio>
     </div>
 
+    <el-dialog title="Памятка дял ОКК" v-model="isManualeShow" width="400px">
+        <p>сдесь можно менять статус ОКК и изменять юзера для определного лида в колонках "Лидоруб" и "Установить ОКК"</p>
+        <strong>чтобы изменения вошли в силу и в будущем програмане перезаписала и не убрала изменения нужно поставить галочку для даного лида в колонке "Проверен"</strong>
+    </el-dialog>
+
 </template>
 
 <script>
@@ -105,6 +112,7 @@
             duration: 0,
             progress: 0,
             usersList: null,
+            isManualeShow: false,
         }
     },
     methods: {

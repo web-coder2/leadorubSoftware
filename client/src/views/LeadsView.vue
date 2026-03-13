@@ -19,6 +19,8 @@
           <el-button @click="resetFilters(); fetchUsersTrasnfers()" type="warning">Сбросить</el-button>
         </div>
       </div>
+
+      <el-button style="margin-top: 20px; margin-bottom: 20px" type="success" plain @click="isShowModalCreateLead = true">Создать лид</el-button>
   
       <!-- Вкладки для выбора таблицы -->
       <el-tabs v-model="activeTab" style="margin-top: 20px" type="border-card" @tab-click="handleTabClick">
@@ -73,12 +75,62 @@
         </el-tab-pane>
       </el-tabs>
     </div>
+
+
+    <el-dialog title="Создание системного лида" v-model="isShowModalCreateLead" width="500px">
+      <el-form :model="newLeadsObject" label-width="120px">
+        <el-form-item label="Дата" prop="date">
+          <el-input v-model="newLeadsObject.date" type="date"></el-input>
+        </el-form-item>
+        <el-form-item label="Брокер" prop="broker">
+          <el-input v-model="newLeadsObject.broker"></el-input>
+        </el-form-item>
+        <el-form-item label="Цена офера" prop="price">
+          <el-input v-model="newLeadsObject.price" type="number"></el-input>
+        </el-form-item>
+        <el-form-item label="Телефон" prop="phone">
+          <el-input v-model="newLeadsObject.phone"></el-input>
+        </el-form-item>
+        <el-form-item label="Статус ОКК" prop="statusOKK">
+          <el-select v-model="newLeadsObject.statusOKK">
+            <el-option :value="true" :label="'Целевой'" />
+            <el-option :value="false" :label="'Нецелевой'" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="сам перевел ?" prop="selfLead">
+          <el-select v-model="newLeadsObject.selfLead">
+            <el-option :value="true" :label="'Сам'" />
+            <el-option :value="false" :label="'На брокера'" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="резиденция" prop="residenceStatus">
+          <el-select v-model="newLeadsObject.residenceStatus" placeholder="Выбрать статус">
+            <el-option v-for="status in statusesArray" :label="status" :value="status" :key="status"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="Кол-во холдов" prop="countHold">
+          <el-input v-model="newLeadsObject.countHold"></el-input>
+        </el-form-item>
+        <el-form-item label="Лидоруб" prop="UserName">
+          <FormItemSelect v-if="usersList.length > 0" v-model="newLeadsObject.userName" :options="usersList" />
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="isShowModalCreateLead = false">Отмена</el-button>
+        <el-button type="primary" @click="createHandSytemLead">Сохранить</el-button>
+      </div>
+    </el-dialog>
+
 </template>
   
 <script>
   import dayjs from 'dayjs'
   import axios from 'axios'
   import Pagination from '../components/Pagination.vue'
+
+  import FormItemSelect from '../components/FormItemSelect.vue'
+  import { ElMessage } from 'element-plus';
+
   
   export default {
     data() {
@@ -94,10 +146,25 @@
         usersArray: [],
         selectedStatuses: null,
         selectedUsers: null,
+        isShowModalCreateLead: false,
+        newLeadsObject: {
+          date: dayjs().format('YYYY-MM-DD'),
+          broker: 'Володя Банкир',
+          price: 0,
+          phone: '',
+          audioArray: [],
+          residenceStatus: 'created',
+          statusOKK: false,
+          selfLead: false,
+          userName: '',
+          countHold: 0,
+        },
+        usersList: [],
       }
     },
     components: {
-      Pagination
+      Pagination,
+      FormItemSelect
     },
     methods: {
       handleTabClick(tab) {
@@ -122,6 +189,42 @@
   
         this.leadsTableData = response.leads
         this.updateCurrentData(1, this.rowsInPage)
+      },
+      async fetchAllUsers() {
+        try {
+          const response = await this.$store.dispatch('getDataList', { col: 'api/users/getList' })
+          this.usersList = response.data.map(user => ({
+            value: user.name,
+            label: user.name
+          }));
+        } catch (e) {
+          console.log(e.message)
+        }
+      },
+      async createHandSytemLead() {
+        try {
+
+          this.newLeadsObject.phone = this.newLeadsObject.phone.replace(/\D/g, '')
+
+          const response = await this.$store.dispatch('createDataList', {
+            col: 'api/leads/create',
+            data: {
+              leadObject: this.newLeadsObject
+            }
+          })
+
+          ElMessage({
+            message: 'Лид успешно Создан',
+            type: 'success',
+          });
+
+        } catch (e) {
+          console.log(e.message)
+          ElMessage({
+            message: `Ошибка при создании лида ${e.message}`,
+            type: 'error',
+            });
+        }
       },
       async fetchUsersTrasnfers() {
 
@@ -172,6 +275,7 @@
     },
     async beforeMount() {
       await this.getUsersList()
+      await this.fetchAllUsers()
     }
   }
 </script>
