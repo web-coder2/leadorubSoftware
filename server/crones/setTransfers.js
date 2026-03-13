@@ -14,38 +14,43 @@ const { upsertNewLeadsData } = require('../services/leadsService.js')
 
 
 async function setTransfersToDB(gte, lte) {
-
-    const leadsToDate = await getLeadsToOneDay(gte, lte)
-
-    for (let lead of leadsToDate) {
-
-        let leadUser = await getLeadTimeline(lead)
-
-        let leadResidence = await getLeadsOnePhone(gte, lte, lead.number.slice(1))
-        let leadAudioArray = await getLeadAudioUrls(lead)
-        let userIdObject = await getUserIdByName(leadUser)
-        let isSelfLead = await defaineSelfLead(gte, lte, lead.number.slice(1))
-
+    try {
+      const leadsToDate = await getLeadsToOneDay(gte, lte);
+  
+      if (!Array.isArray(leadsToDate)) {
+        console.error('leadsToDate не является массивом:', leadsToDate);
+        return;
+      }
+  
+      for (let lead of leadsToDate) {
+        let leadUser = await getLeadTimeline(lead);
+        let leadResidence = await getLeadsOnePhone(gte, lte, lead.number.slice(1));
+        let leadAudioArray = await getLeadAudioUrls(lead);
+        let userIdObject = await getUserIdByName(leadUser);
+        let isSelfLead = await defaineSelfLead(gte, lte, lead.number.slice(1));
+  
         let leadInfo = {
-            date: dayjs(gte).format('YYYY-MM-DD'),
-            broker: leadResidence.broker,
-            price: leadResidence.price,
-            phone: lead.number.slice(1),
-            audioArray: leadAudioArray,
-            residenceStatus: leadResidence.status,
-            statusOKK: false,
-            selfLead: isSelfLead,
-            user: userIdObject?._id ?? undefined,
-            userName: leadUser,
-            countHold: leadResidence.countHold,
-            isEdited: false,
-        }
-
-        // console.log(leadInfo)
-        
-        const result = await upsertNewLeadsData(leadInfo)
+          date: dayjs(gte).format('YYYY-MM-DD'),
+          broker: leadResidence.broker,
+          price: leadResidence.price,
+          phone: lead.number.slice(1),
+          audioArray: leadAudioArray,
+          residenceStatus: leadResidence.status,
+          statusOKK: false,
+          selfLead: isSelfLead,
+          user: userIdObject?._id ?? undefined,
+          userName: leadUser,
+          countHold: leadResidence.countHold,
+          isEdited: false,
+        };
+  
+        const result = await upsertNewLeadsData(leadInfo);
+      }
+  
+      console.log('Обновление в базу за ', dayjs(gte).format('YYYY-MM-DD'), 'закончилось');
+    } catch (error) {
+      console.error('Ошибка в setTransfersToDB:', error.message);
     }
-
 }
 
 function setTransfersCrone() {
@@ -53,9 +58,9 @@ function setTransfersCrone() {
 
     setTransfersToDB(new Date(), new Date())
   
-    // crone.schedule(croneHour, () => {
-    //     setTransfersToDB(new Date(), new Date())
-    // })
+    crone.schedule(croneHour, () => {
+        setTransfersToDB(new Date(), new Date())
+    })
   }
 
 module.exports = { setTransfersCrone }
