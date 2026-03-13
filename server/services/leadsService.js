@@ -38,7 +38,6 @@ async function upsertNewLeadsData(lead) {
         const entryFromDB = await leadsModel.findOne({
             date: lead.date,
             phone: lead.phone,
-            userName: lead.userName
         })
 
         if (entryFromDB) {
@@ -47,10 +46,10 @@ async function upsertNewLeadsData(lead) {
                     { _id: entryFromDB._id },
                     {
                         $set: {
+                            broker: lead.broker,
                             price: lead.price,
                             audioArray: lead.audioArray,
-                            residenceStatus: lead.residenceStatus,
-                            statusOKK: lead.statusOKK,
+                            residenceStatus: lead.residenceStatus, // возможно потом это убрать если админ будет менять этот статус тоже
                             selfLead: lead.selfLead,
                             countHold: lead.countHold,
                         }
@@ -64,7 +63,6 @@ async function upsertNewLeadsData(lead) {
         const oldEntry = await leadsModel.findOneAndDelete({
             date: lead.date,
             phone: lead.phone,
-            userName: lead.userName
         })
 
         const newEntry = new leadsModel({

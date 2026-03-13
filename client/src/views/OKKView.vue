@@ -15,7 +15,12 @@
     <el-table :data="tableData" style="width: 100%">
         <el-table-column prop="date" label="Дата"></el-table-column>
         <el-table-column prop="phone" label="Телефон"></el-table-column>
-        <el-table-column prop="userName" label="Имя"></el-table-column>
+        <!-- <el-table-column prop="userName" label="Имя"></el-table-column> -->
+        <el-table-column label="Лидоруб">
+            <template #default="{ row }">
+                <FormItemSelect v-if="usersList" v-model="row.userName" :options="usersList" />
+            </template>
+        </el-table-column>
         <el-table-column label="Прослушать">
             <template #default="{ row }">
                 <el-button v-for="(audio, index) in row.audioArray" :key="index" circle plain type="warning" @click="playAudio(audio)">
@@ -25,10 +30,12 @@
                 </el-button>
             </template>
         </el-table-column>
-        <el-table-column prop="statusOKK" label="Статус ОКК">
+        <el-table-column label="Установить ОКК">
             <template #default="{ row }">
-                <p v-if="row.statusOKK === false">Нецелевой</p>
-                <strong v-if="row.statusOKK === true">Целевой</strong>
+              <el-select v-model="row.statusOKK" placeholder="Выберите статус" style="width: 120px;">
+                <el-option :label="'Целевой'" :value="true"></el-option>
+                <el-option :label="'Нецелевой'" :value="false"></el-option>
+              </el-select>
             </template>
         </el-table-column>
         <el-table-column prop="selfLead" label="Сам перевел">
@@ -46,14 +53,6 @@
                 <el-checkbox v-model="row.isEdited"></el-checkbox>
             </template>
         </el-table-column>
-        <el-table-column label="Установить">
-            <template #default="{ row }">
-              <el-select v-model="row.statusOKK" placeholder="Выберите статус" style="width: 120px;">
-                <el-option :label="'Целевой'" :value="true"></el-option>
-                <el-option :label="'Нецелевой'" :value="false"></el-option>
-              </el-select>
-            </template>
-          </el-table-column>
     </el-table>
 
     <el-button type="success" @click="saveLeadsData">Сохранить данные</el-button>
@@ -82,6 +81,8 @@
     import { VideoPlay, VideoPause } from '@element-plus/icons-vue'
     import { ElMessage } from 'element-plus';
 
+    import FormItemSelect from '../components/FormItemSelect.vue'
+
 
     import axios from 'axios'
     import dayjs from 'dayjs'
@@ -92,16 +93,18 @@
         ElSlider,
         VideoPlay,
         VideoPause,
+        FormItemSelect,
     },
     data() {
         return {
-        tableData: [],
-        gte: dayjs().format('YYYY-MM-DD'),
-        currentAudioUrl: null,
-        isPlaying: false,
-        currentTime: 0,
-        duration: 0,
-        progress: 0,
+            tableData: [],
+            gte: dayjs().format('YYYY-MM-DD'),
+            currentAudioUrl: null,
+            isPlaying: false,
+            currentTime: 0,
+            duration: 0,
+            progress: 0,
+            usersList: null,
         }
     },
     methods: {
@@ -129,6 +132,17 @@
                 message: 'Лиды успешно изменены',
                 type: 'success',
             });
+        },
+        async fetchAllUsers() {
+            try {
+                const response = await this.$store.dispatch('getDataList', { col: 'api/users/getList' })
+                this.usersList = response.data.map(user => ({
+                    value: user.name,
+                    label: user.name
+                }));
+            } catch (e) {
+                console.log(e.message)
+            }
         },
         getTypeOfBadge(status) {
             let type
@@ -196,6 +210,7 @@
     },
     async beforeMount() {
         await this.fetchLeads()
+        await this.fetchAllUsers()
     }
     }
 </script>

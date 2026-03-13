@@ -9,8 +9,11 @@
         <p>Если в поле "Лидоруб" будет пусто или не ваше имя то впишите его правлиьно</p>
 
         <el-form :model="transferObject" label-width="120px">
-            <el-form-item label="Лидоруб" prop="userName">
+            <!-- <el-form-item label="Лидоруб" prop="userName">
                 <el-input v-model="transferObject.userName"></el-input>
+            </el-form-item> -->
+            <el-form-item label="Лидоруб" prop="userName">
+                <FormItemSelect v-if="usersList.length > 0" v-model="transferObject.userName" :options="usersList" />
             </el-form-item>
             <el-form-item label="Дата" prop="phone">
                 <el-input v-model="transferObject.date" type="date"></el-input>
@@ -41,6 +44,7 @@
 
     import { ElMessage } from 'element-plus';
 
+    import FormItemSelect from './FormItemSelect.vue';
 
     export default {
         data() {
@@ -52,9 +56,13 @@
                     phone: '',
                     client: '',
                     description: ''
-                }
+                },
+                usersList: [],
             }
         },
+        components: {
+            FormItemSelect
+        },  
         props: {
             userName: {
                 type: String,
@@ -66,33 +74,53 @@
                 this.isShowModal = true
             },
             async saveTransfer() {
-                try {
+                if (!this.transferObject.userName) {
+                    ElMessage({
+                        message: 'Пожалуйста, выберите лидоруба',
+                        type: 'warning',
+                    });
+                    return; 
+                }
 
-                    this.transferObject.date = dayjs(this.transferObject.date).format('YYYY-MM-DD')
+                try {
+                    this.transferObject.date = dayjs(this.transferObject.date).format('YYYY-MM-DD');
 
                     const response = await this.$store.dispatch('createDataList', {
                         col: "api/transfers/create",
                         data: {
                             transferObject: this.transferObject
                         }
-                    })
+                    });
 
-                    this.isShowModal = false
+                    this.isShowModal = false;
 
                     ElMessage({
                         message: 'Трансфер успешно добавлен в БД',
                         type: 'success',
                     });
-
                 } catch (e) {
-                    console.log(e.message)
+                    console.log(e.message);
 
                     ElMessage({
-                        message: 'Ошбика при добавление трансфера',
+                        message: 'Ошибка при добавлении трансфера',
                         type: 'error',
                     });
                 }
+            },
+            async fetchAllUsers() {
+                try {
+                    const response = await this.$store.dispatch('getDataList', { col: 'api/users/getList' })
+                    this.usersList = response.data.map(user => ({
+                        value: user.name,
+                        label: user.name
+                    }));
+                } catch (e) {
+                    console.log(e.message)
+                }
             }
+        },
+        async beforeMount() {
+            await this.fetchAllUsers()
         }
     }
 

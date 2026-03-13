@@ -30,20 +30,31 @@ router.get('/api/salary/get', async (req, res) => {
 
         const result = usersStatsData.map((item) => {
             let newItem = { ...item.toObject() };
-            
-            // если выбран сегодня и 1 день
-            if (todayStr === dayjs(gte).format('YYYY-MM-DD') && gte === lte) {
-              newItem.scriptBonus = NaN;
-            } else {
-                // если выбран не сегодня или несколько дней
-            }
-          
             return newItem;
           });
 
         let resultObject = {}
 
+        function getBonusByDate(item) {
+            let bonus = 0;
+        
+            if (dayjs(item.date).format('YYYY-MM-DD') === dayjs().format('YYYY-MM-DD')) {
+                if (dayjs().hour() > 21) { // прошло больше 21 часов дня
+                    bonus = item.scriptBonus;
+                } else {
+                    bonus = 0;
+                }
+            } else {
+                bonus = item.scriptBonus
+            }
+        
+            return bonus;
+        }
+
         result.forEach((item) => {
+
+            let bonusByDate = getBonusByDate(item)
+
             if (resultObject[item.name]) {
                 resultObject[item.name].countCalls += item.countCalls
                 resultObject[item.name].countLeads += item.countLeads
@@ -51,7 +62,7 @@ router.get('/api/salary/get', async (req, res) => {
                 resultObject[item.name].countHolds += item.countHolds
                 resultObject[item.name].sumHold += item.sumHold
                 resultObject[item.name].salary += item.salary
-                resultObject[item.name].scriptBonus += item.scriptBonus
+                resultObject[item.name].scriptBonus += bonusByDate
                 resultObject[item.name].clear += item.clear
                 resultObject[item.name].brokerSalary += item.brokerSalary
             } else {
@@ -64,7 +75,7 @@ router.get('/api/salary/get', async (req, res) => {
                     countHolds: item.countHolds,
                     sumHold: item.sumHold,
                     salary: item.salary,
-                    scriptBonus: item.scriptBonus,
+                    scriptBonus: bonusByDate,
                     clear: item.clear,
                     brokerSalary: item.brokerSalary,
                 }
