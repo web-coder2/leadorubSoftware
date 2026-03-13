@@ -85,7 +85,7 @@ router.post('/api/leads/create', async (req, res) => {
 
         const { leadObject } = req.body
 
-        const userId = await getUserIdByName(leadObject.name)
+        const userId = await getUserIdByName(leadObject.userName)
 
         const newLeadObject = leadsModel({
             date: leadObject.date,
@@ -96,7 +96,7 @@ router.post('/api/leads/create', async (req, res) => {
             residenceStatus: leadObject.residenceStatus,
             statusOKK: leadObject.statusOKK,
             selfLead: leadObject.selfLead,
-            user: userId ?? null,
+            user: userId?._id ?? null,
             userName: leadObject.userName,
             countHold: leadObject.countHold,
             isEdited: true,
