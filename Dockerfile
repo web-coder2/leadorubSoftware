@@ -2,7 +2,7 @@ FROM node:20-slim
 
 WORKDIR /app
 
-COPY client/ ./client
+COPY client/dist ./client/dist
 COPY server/ ./server
 COPY package.json package.json
 
