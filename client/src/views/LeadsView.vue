@@ -241,8 +241,10 @@
         this.usersTransfersData = response.transfers
       },
       async getUsersList() {
-        let response = await axios.get('http://localhost:3000/api/users/getList')
-        this.usersArray = response.data.data
+        let response = await this.$store.dispatch('getDataList', {
+            col: 'api/users/getList'
+        })
+        this.usersArray = response.data
       },
       getTypeOfBadge(status) {
         let type

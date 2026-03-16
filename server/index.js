@@ -16,9 +16,9 @@ const leadsRoute = require('./routes/leadsRoute.js')
 const usersStatsRoute = require('./routes/usersStatsRoute.js')
 const transfersRoute = require('./routes/transfersRoute.js')
 
-// setTransfersCrone()
-// setUsersStatsCrone()
-// updateTransfersCrone()
+setTransfersCrone()
+setUsersStatsCrone()
+updateTransfersCrone()
 
 dotenv.config()
 
@@ -47,11 +47,30 @@ app.use(
 
 app.use(cookieParser());
 
+// Обслуживание статических файлов из client/dist
+app.use(express.static(path.join(__dirname, '../client/dist')));
+
+// Middleware этот будет для прода чтобы отдавать статику если нет такого
+app.use((req, res, next) => {
+
+    const reqQuery = req.path
+
+    if (reqQuery.includes('/api/')) {
+        console.log('Request path:', reqQuery);
+        next()
+    } else {
+        res.sendFile(path.join(__dirname, '../client/dist/index.html'))
+        console.log('client interfface path: ', reqQuery)
+    }
+
+});
+
 
 app.use(usersRoute)
 app.use(leadsRoute)
 app.use(usersStatsRoute)
 app.use(transfersRoute)
+
 
 async function startConnectToDB() {
     try {
