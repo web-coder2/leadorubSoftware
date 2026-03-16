@@ -16,7 +16,7 @@
 
     <el-table :data="salaryTableData" style="width: 100%">
         <el-table-column prop="name" label="Имя"></el-table-column>
-        <el-table-column prop="email" label="Логин"></el-table-column>
+        <!-- <el-table-column prop="email" label="Логин"></el-table-column> -->
         <el-table-column prop="countCalls" label="Звонки"></el-table-column>
         <el-table-column prop="countLeads" label="Лиды"></el-table-column>
         <el-table-column prop="countTargets" label="Целевые"></el-table-column>
