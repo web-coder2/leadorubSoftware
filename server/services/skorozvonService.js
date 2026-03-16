@@ -99,6 +99,9 @@ async function getLeadsToOneDay(gte, lte) {
 }
 
 async function getLeadAudioUrls(transfer) {
+
+    let audioUrls = []
+
     try {
 
         const token = await getSkorozvonToken()
@@ -111,7 +114,6 @@ async function getLeadAudioUrls(transfer) {
         });
 
         const leads = response.data.data;
-        let audioUrls = []
 
         for (let lead of leads.data) {
             const audioUrl = `https://pod5-shard2-lb1.skorozvon.ru/call_records/${lead.attachment_id}`
@@ -128,13 +130,11 @@ async function getLeadAudioUrls(transfer) {
             // })
 
             audioUrls.push(responseUrl.data.data.url)
-
         }
-
         return audioUrls
-
     } catch (e) {
-        console.log(e.message)
+        // console.log(e.message)
+        return audioUrls
     }
 }
 

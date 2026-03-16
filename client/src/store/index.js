@@ -4,9 +4,9 @@ import axios from 'axios';
 
 const store = createStore({
   state: {
-    // apiBaseURL: 'http://localhost:3000/',
+    apiBaseURL: 'http://localhost:3000/',
     // это для прода (потом наверное с сборкой буду делать и ENV добавлю для прода и дева) это пока времено и коменитьь что да как нужно
-    apiBaseURL: 'http://31.130.151.240:3000/'
+    // apiBaseURL: 'http://31.130.151.240:3000/'
   },
   getters: {
     getApiBaseURL: (state) => state.apiBaseURL,
