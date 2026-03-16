@@ -45,6 +45,12 @@
                 <p>{{ row.selfLead ? 'Сам' : 'На брокера' }}</p>
             </template>
         </el-table-column>
+        <el-table-column prop="broker" label="Брокер"></el-table-column>
+        <el-table-column prop="commentOKK" label="Коментарий">
+            <template #default="{ row }">
+                <el-input v-model="row.commentOKK"></el-input>
+            </template>
+        </el-table-column>
         <el-table-column prop="residenceStatus" label="Статус">
             <template #default="{ row }">
                 <el-badge :value="row.residenceStatus" :type="getTypeOfBadge(row.residenceStatus)"></el-badge>

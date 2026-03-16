@@ -42,6 +42,7 @@ async function setTransfersToDB(gte, lte) {
           userName: leadUser,
           countHold: leadResidence.countHold,
           isEdited: false,
+          commentOKK: ""
         };
   
         const result = await upsertNewLeadsData(leadInfo);

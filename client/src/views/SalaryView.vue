@@ -24,8 +24,13 @@
         <el-table-column prop="sumHold" label="Сумма холдов"></el-table-column>
         <el-table-column prop="salary" label="Зарплата"></el-table-column>
         <el-table-column prop="scriptBonus" label="Бонус"></el-table-column>
+        <el-table-column prop="salary + scriptBonus" label="Итого ЗП">
+            <template #default="{ row }">
+                <p>{{ row.salary + row.scriptBonus }}</p>
+            </template>
+        </el-table-column>
         <el-table-column prop="clear" label="Чистая"></el-table-column>
-        <el-table-column prop="brokerSalary" label="ЗП брокерам"></el-table-column>
+        <!-- <el-table-column prop="brokerSalary" label="ЗП брокерам"></el-table-column> -->
     </el-table>
     
 </template>

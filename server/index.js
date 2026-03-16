@@ -16,9 +16,9 @@ const leadsRoute = require('./routes/leadsRoute.js')
 const usersStatsRoute = require('./routes/usersStatsRoute.js')
 const transfersRoute = require('./routes/transfersRoute.js')
 
-setTransfersCrone()
-setUsersStatsCrone()
-updateTransfersCrone()
+// setTransfersCrone()
+// setUsersStatsCrone()
+// updateTransfersCrone()
 
 dotenv.config()
 

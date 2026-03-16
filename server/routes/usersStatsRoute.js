@@ -61,7 +61,7 @@ router.get('/api/salary/get', async (req, res) => {
                 resultObject[item.name].countTargets += item.countTargets
                 resultObject[item.name].countHolds += item.countHolds
                 resultObject[item.name].sumHold += item.sumHold
-                resultObject[item.name].salary += item.salary
+                resultObject[item.name].salary += Math.round(item.salary)
                 resultObject[item.name].scriptBonus += bonusByDate
                 resultObject[item.name].clear += item.clear
                 resultObject[item.name].brokerSalary += item.brokerSalary
@@ -74,7 +74,7 @@ router.get('/api/salary/get', async (req, res) => {
                     countTargets: item.countTargets,
                     countHolds: item.countHolds,
                     sumHold: item.sumHold,
-                    salary: item.salary,
+                    salary: Math.round(item.salary),
                     scriptBonus: bonusByDate,
                     clear: item.clear,
                     brokerSalary: item.brokerSalary,
