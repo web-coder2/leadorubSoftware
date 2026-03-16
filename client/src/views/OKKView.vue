@@ -3,7 +3,7 @@
 
     <el-form inline>
         <el-form-item label="Начало">
-          <el-date-picker v-model="gte" type="date" style="width: 200px"/>
+          <el-input v-model="gte" type="date" style="width: 200px"/>
         </el-form-item>
         <el-form-item>
             <el-button type="success" @click="fetchLeads">Применить</el-button>
