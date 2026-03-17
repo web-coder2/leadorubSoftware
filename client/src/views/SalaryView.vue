@@ -31,7 +31,7 @@
                 <p>{{ row.salary + row.scriptBonus }}</p>
             </template>
         </el-table-column>
-        <el-table-column prop="clear" label="Чистая"></el-table-column>
+        <el-table-column v-if="userRole === 'admin'" prop="clear" label="Чистая"></el-table-column>
         <!-- <el-table-column prop="brokerSalary" label="ЗП брокерам"></el-table-column> -->
     </el-table>
     
@@ -49,6 +49,8 @@
                 salaryTableData: [],
                 gte: dayjs(new Date).format('YYYY-MM-DD'),
                 lte: dayjs(new Date).format('YYYY-MM-DD'),
+                userObject: null,
+                userRole: null,
             }
         },
         methods: {
@@ -62,9 +64,14 @@
                 })
                 this.salaryTableData = response.data
             },
+            async getUserStats() {
+                this.userObject = this.$store.getters['getUserObject']
+                this.userRole = this.userObject.rankName
+            }
         },
         async beforeMount() {
             await this.getSalaryData()
+            await this.getUserStats()
         }
     }
 
