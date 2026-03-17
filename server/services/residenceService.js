@@ -75,24 +75,33 @@ async function getLeadsOnePhone(gte, lte, phone) {
         // status будет или hold или confirmed или refused
         // а countHold будет 1 + 1 + 1
 
-        leadsByPhone.forEach((item) => {
-            if (allowedHolds.includes(item.status)) {
-                residenceInfo.price += item.price.offer
-                // residenceInfo.status = item.status
-                residenceInfo.countHold += 1
-                // финальный статус
-                holdStatus = item.status
-            } else {
-                // residenceInfo.status = item.status
-                // изменяем текущий статус
-                currentStatus = item.status
-            }
-            residenceInfo.broker = item.userId.name
+        let holdsArray = []
 
-            residenceInfo.status = holdStatus !== null ? holdStatus : currentStatus
-
+        let leadsOnHold = leadsByPhone.filter((item) => {
+            return allowedHolds.includes(item.status)
         })
-        return residenceInfo
+
+        if (leadsOnHold.length > 0) {
+            leadsOnHold.forEach((item) => {
+                holdsArray.push({
+                    price: item?.price?.offer ?? 0,
+                    status: item.status,
+                    broker: item?.userId?.name ?? '',
+                    countHold: 1,
+                    offerName: item?.offerId?.name ?? '',
+                })
+            })
+        } else {
+            holdsArray.push({
+                price: 0,
+                status: leadsByPhone[0].status,
+                broker: leadsByPhone[0].userId.name,
+                countHold: 0,
+                offerName: item?.offerId?.name ?? '',
+            })
+        }
+
+        return holdsArray
     } catch (e) {
         console.log(e.message)
     }

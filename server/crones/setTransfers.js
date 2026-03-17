@@ -29,23 +29,30 @@ async function setTransfersToDB(gte, lte) {
         let userIdObject = await getUserIdByName(leadUser);
         let isSelfLead = await defaineSelfLead(gte, lte, lead.number.slice(1));
   
-        let leadInfo = {
-          date: dayjs(gte).format('YYYY-MM-DD'),
-          broker: leadResidence.broker,
-          price: leadResidence.price,
-          phone: lead.number.slice(1),
-          audioArray: leadAudioArray,
-          residenceStatus: leadResidence.status,
-          statusOKK: false,
-          selfLead: isSelfLead,
-          user: userIdObject?._id ?? undefined,
-          userName: leadUser,
-          countHold: leadResidence.countHold,
-          isEdited: false,
-          commentOKK: ""
-        };
-  
-        const result = await upsertNewLeadsData(leadInfo);
+        
+        // в эту переменую долен вернстьяс масив записаться
+
+        if (leadResidence) {
+          for (let item of leadResidence) {
+            let leadInfo = {
+              date: dayjs(gte).format('YYYY-MM-DD'),
+              broker: item.broker,
+              price: item.price,
+              offerName: item.offerName,
+              phone: lead.number.slice(1),
+              audioArray: leadAudioArray,
+              residenceStatus: item.status,
+              statusOKK: false,
+              selfLead: isSelfLead,
+              user: userIdObject?._id ?? undefined,
+              userName: leadUser,
+              countHold: item.countHold,
+              isEdited: false,
+              commentOKK: ""
+            };
+            const result = await upsertNewLeadsData(leadInfo);
+          }
+        }
       }
   
       console.log('Обновление в базу за ', dayjs(gte).format('YYYY-MM-DD'), 'закончилось');

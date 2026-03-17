@@ -21,6 +21,11 @@ const leadsModel = new Schema({
         type: String,
         required: false,
         default: ""
+    },
+    offerName: {
+        type: String,
+        required: false,
+        default: ''
     }
 })
 

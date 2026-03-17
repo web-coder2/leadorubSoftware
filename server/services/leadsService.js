@@ -35,9 +35,13 @@ async function upsertNewLeadsData(lead) {
 
     try {
 
+
+        console.log(lead)
+
         const entryFromDB = await leadsModel.findOne({
             date: lead.date,
             phone: lead.phone,
+            offerName: lead.offerName
         })
 
         if (entryFromDB) {
@@ -48,6 +52,7 @@ async function upsertNewLeadsData(lead) {
                         $set: {
                             broker: lead.broker,
                             price: lead.price,
+                            // offerName: lead.offerName,
                             audioArray: lead.audioArray,
                             residenceStatus: lead.residenceStatus, // возможно потом это убрать если админ будет менять этот статус тоже
                             selfLead: lead.selfLead,
@@ -57,30 +62,25 @@ async function upsertNewLeadsData(lead) {
                 );
                 return; 
             }
+        } else {
+            const newEntry = new leadsModel({
+                date: lead.date,
+                phone: lead.phone,
+                userName: lead.userName,
+                broker: lead.broker,
+                price: lead.price,
+                audioArray: lead.audioArray,
+                residenceStatus: lead.residenceStatus,
+                statusOKK: lead.statusOKK,
+                selfLead: lead.selfLead,
+                user: lead.user,
+                countHold: lead.countHold,
+                isEdited: lead.isEdited,
+                offerName: lead.offerName
+            })
+    
+            await newEntry.save()
         }
-        
-
-        const oldEntry = await leadsModel.findOneAndDelete({
-            date: lead.date,
-            phone: lead.phone,
-        })
-
-        const newEntry = new leadsModel({
-            date: lead.date,
-            phone: lead.phone,
-            userName: lead.userName,
-            broker: lead.broker,
-            price: lead.price,
-            audioArray: lead.audioArray,
-            residenceStatus: lead.residenceStatus,
-            statusOKK: lead.statusOKK,
-            selfLead: lead.selfLead,
-            user: lead.user,
-            countHold: lead.countHold,
-            isEdited: lead.isEdited
-        })
-
-        await newEntry.save()
 
     } catch (e) {
         console.log(e.message, lead.phone)
