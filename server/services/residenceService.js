@@ -94,10 +94,10 @@ async function getLeadsOnePhone(gte, lte, phone) {
         } else {
             holdsArray.push({
                 price: 0,
-                status: leadsByPhone[0].status,
-                broker: leadsByPhone[0].userId.name,
+                status: leadsByPhone[0]?.status ?? 'created',
+                broker: leadsByPhone[0]?.userId?.name ?? '',
                 countHold: 0,
-                offerName: item?.offerId?.name ?? '',
+                offerName: leadsByPhone[0]?.offerId?.name ?? '',
             })
         }
 

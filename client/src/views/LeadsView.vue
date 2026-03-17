@@ -47,7 +47,8 @@
                 </template>
               </el-table-column>
               <el-table-column prop="price" label="Цена"></el-table-column>
-              <el-table-column prop="countHold" label="Кол-во холдов"></el-table-column>
+              <!-- <el-table-column prop="countHold" label="Кол-во холдов"></el-table-column> -->
+              <el-table-column prop="offerName" label="Офер"></el-table-column>
             </el-table>
   
             <Pagination :tableData="leadsTableData" :rowsInPage="rowsInPage" @page-change="handlePageChange"></Pagination>

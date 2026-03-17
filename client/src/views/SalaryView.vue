@@ -14,6 +14,8 @@
         </el-form-item>
     </el-form>
 
+    <el-button @click="isShowClearCalculation = true" v-if="userRank === 'admin'">Проверить чистую</el-button>
+
     <el-table :data="salaryTableData" style="width: 100%">
         <el-table-column prop="name" label="Имя"></el-table-column>
         <!-- <el-table-column prop="email" label="Логин"></el-table-column> -->
@@ -59,7 +61,7 @@
                     }
                 })
                 this.salaryTableData = response.data
-            }
+            },
         },
         async beforeMount() {
             await this.getSalaryData()

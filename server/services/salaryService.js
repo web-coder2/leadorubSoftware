@@ -25,7 +25,7 @@ function calculateBonusToTargetsLeadorub(userObject) {
     if (userObject.countTargets >= 3 && userObject.countTargets < 6) {
         bonusToTargets = 200
     } else if (userObject.countTargets >= 6) {
-        bonusToTargets = 420
+        bonusToTargets = 470
     }
 
     return bonusToTargets
