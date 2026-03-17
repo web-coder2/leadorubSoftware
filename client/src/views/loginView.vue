@@ -23,22 +23,33 @@
                 const response = await this.$store.dispatch('createDataList', {
                     col: 'api/users/auth',
                     data: {
-                        email: this.email,
-                        password: this.password
-                    }
+                    email: this.email,
+                    password: this.password,
+                    },
                 })
 
                 let responseUser = response.user
 
-                if (responseUser.length !== 0) {
-                    localStorage.setItem('userObject', JSON.stringify({ email: this.email, password: this.password, rankName: responseUser[0].rankName, name: responseUser[0].name }));
-                    this.$router.push({ name: 'home' });
+                if (responseUser && responseUser.length !== 0) {
+                    const userData = {
+                        email: this.email,
+                        password: this.password,
+                        rankName: responseUser[0].rankName,
+                        name: responseUser[0].name,
+                    }
+                    this.$store.commit('setUserObject', userData)
+                    this.$router.push({ name: 'home' }).then(() => {
+                        window.location.reload()
+                    })
+                } else {
+                    alert('Неверный логин или пароль')
                 }
             }
         },
         beforeMount() {
             // чтобы когда появился на логинской тсранцие то локалсторадж убрался и rankName тоже
             localStorage.clear();
+            this.$store.commit('clearUserObject')
         }
     }
 </script>

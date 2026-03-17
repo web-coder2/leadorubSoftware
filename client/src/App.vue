@@ -1,6 +1,6 @@
 <template>
-  <el-container v-if="userObject.rankName" style="height: 100vh;">
-    <el-aside v-if="showSidebar" width="200px" style="height: 100vh; background-color: #2d2d2d;">
+  <el-container style="height: 100vh;">
+    <el-aside v-if="showSidebar && !isLoading" width="200px" style="height: 100vh; background-color: #2d2d2d;">
       <el-menu default-active="1" background-color="transparent" text-color="#fff" active-text-color="#ffd04b" router style="height: 100%; display: flex; flex-direction: column; justify-content: flex-start;">
         <template v-for="(item, index) in menuItems" :key="index">
           <el-menu-item v-if="!item.condition || item.condition()" :index="item.path" :to="item.path">
@@ -28,7 +28,8 @@ export default {
       userObject: null,
       rankName: '',
       route: null,
-      menuItems: []
+      menuItems: [],
+      isLoading: true,
     }
   },
   computed: {
@@ -37,11 +38,6 @@ export default {
     }
   },
   methods: {
-    loadUserObject() {
-      const userStr = localStorage.getItem('userObject')
-      this.userObject = userStr ? JSON.parse(userStr) : null
-      this.rankName = this.userObject?.rankName || ''
-    },
     initializeMenu() {
       this.menuItems = [
         {
@@ -91,8 +87,11 @@ export default {
   },
   async beforeMount() {
     this.route = this.$router.currentRoute
-    await this.loadUserObject()
-    await this.initializeMenu()
+    this.userObject = this.$store.getters['getUserObject']
+    this.rankName = this.userObject.rankName
+    this.initializeMenu()
+    console.log(this.userObject)
+    this.isLoading = false
   }
 }
 </script>
