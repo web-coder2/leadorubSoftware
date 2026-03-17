@@ -38,10 +38,23 @@ async function upsertNewLeadsData(lead) {
         const entryFromDB = await leadsModel.findOne({
             date: lead.date,
             phone: lead.phone,
-            offerName: lead.offerName
+            // offerName: lead.offerName
         })
 
         if (entryFromDB) {
+
+            if (entryFromDB.offerName === "" && lead.offerName !== "") {
+                entryFromDB.offerName = lead.offerName
+            } else if (entryFromDB.offerName === lead.offerName) {
+                // зделать $set update
+            } else if (entryFromDB.offerName === "" && lead.offerName === "") {
+                // точно так же сделать $set update
+            }
+
+
+            // TODO: продумать логику чтобы не было дублей либо потом добавить флажок или удалять вручную лиды (но сработает на заднее число)
+            // TODO: продумать все моменты когда переобновлять полностью либо дополнять вторичные свойста существующему лиду 
+
             if (entryFromDB.isEdited === true) {
                 await leadsModel.updateOne(
                     { _id: entryFromDB._id },
