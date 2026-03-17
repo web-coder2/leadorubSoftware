@@ -1,5 +1,5 @@
 <template>
-  <el-container style="height: 100vh;">
+  <el-container v-if="userObject.rankName" style="height: 100vh;">
     <el-aside v-if="showSidebar" width="200px" style="height: 100vh; background-color: #2d2d2d;">
       <el-menu default-active="1" background-color="transparent" text-color="#fff" active-text-color="#ffd04b" router style="height: 100%; display: flex; flex-direction: column; justify-content: flex-start;">
         <template v-for="(item, index) in menuItems" :key="index">
@@ -17,66 +17,82 @@
   </el-container>
 </template>
 
-<script setup>
-import { computed } from 'vue'
+<script>
+import { ref, computed, onBeforeMount } from 'vue'
 import { useRoute } from 'vue-router'
 import { User, House, Avatar, Service, Star, View, Money } from '@element-plus/icons-vue'
 
-// Получение route
-const route = useRoute()
-
-// Условие отображения сайдбара
-const showSidebar = computed(() => route.path !== '/login')
-
-// Получение rankName из localStorage
-const userObject = JSON.parse(localStorage.getItem('userObject'));
-const rankName = userObject?.rankName || '';
-
-console.log(rankName)
-
-// Массив вкладок
-const menuItems = [
-  {
-    label: 'Выйти',
-    path: '/login',
-    icon: Avatar,
-    condition: null, // всегда показывать
+export default {
+  data() {
+    return {
+      userObject: null,
+      rankName: '',
+      route: null,
+      menuItems: []
+    }
   },
-  {
-    label: 'Профиль',
-    path: '/profile',
-    icon: User,
-    condition: null,
+  computed: {
+    showSidebar() {
+      return this.route.path !== '/login'
+    }
   },
-  {
-    label: 'Главная',
-    path: '/',
-    icon: House,
-    condition: null,
+  methods: {
+    loadUserObject() {
+      const userStr = localStorage.getItem('userObject')
+      this.userObject = userStr ? JSON.parse(userStr) : null
+      this.rankName = this.userObject?.rankName || ''
+    },
+    initializeMenu() {
+      this.menuItems = [
+        {
+          label: 'Выйти',
+          path: '/login',
+          icon: Avatar,
+          condition: null,
+        },
+        {
+          label: 'Профиль',
+          path: '/profile',
+          icon: User,
+          condition: null,
+        },
+        {
+          label: 'Главная',
+          path: '/',
+          icon: House,
+          condition: null,
+        },
+        {
+          label: 'Лиды',
+          path: '/leads',
+          icon: Service,
+          condition: () => this.rankName === 'admin',
+        },
+        {
+          label: 'Пользователи',
+          path: '/users',
+          icon: View,
+          condition: () => this.rankName === 'admin',
+        },
+        {
+          label: 'Зарплатная',
+          path: '/salary',
+          icon: Money,
+          condition: null,
+        },
+        {
+          label: 'ОКК',
+          path: '/okk',
+          icon: Star,
+          condition: () => this.rankName === 'admin',
+        },
+      ]
+    }
   },
-  {
-    label: 'Лиды',
-    path: '/leads',
-    icon: Service,
-    condition: () => rankName === 'admin',
-  },
-  {
-    label: 'Пользователи',
-    path: '/users',
-    icon: View,
-    condition: () => rankName === 'admin',
-  },
-  {
-    label: 'Зарплатная',
-    path: '/salary',
-    icon: Money,
-    condition: null,
-  },
-  {
-    label: 'ОКК',
-    path: '/okk',
-    icon: Star,
-    condition: () => rankName === 'admin',
-  },
-]
+  async beforeMount() {
+    this.route = this.$router.currentRoute
+    await this.loadUserObject()
+    await this.initializeMenu()
+  }
+}
 </script>

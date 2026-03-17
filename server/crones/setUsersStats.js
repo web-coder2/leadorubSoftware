@@ -65,7 +65,7 @@ async function setUsersStatsToDB(gte, lte) {
 function setUsersStatsCrone() {
     const croneHour = '0 * * * *'
 
-    setUsersStatsToDB(new Date('2026-03-13'), new Date('2026-03-13'))
+    setUsersStatsToDB(new Date('2026-03-16'), new Date('2026-03-16'))
   
     crone.schedule(croneHour, () => {
         setUsersStatsToDB(new Date(), new Date())
