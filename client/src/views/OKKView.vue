@@ -18,12 +18,12 @@
         <el-table-column :width="100" prop="date" label="Дата"></el-table-column>
         <el-table-column :width="120" prop="phone" label="Телефон"></el-table-column>
         <!-- <el-table-column prop="userName" label="Имя"></el-table-column> -->
-        <el-table-column :width="200" label="Лидоруб">
+        <el-table-column :width="170" label="Лидоруб">
             <template #default="{ row }">
                 <FormItemSelect v-if="usersList" v-model="row.userName" :options="usersList" />
             </template>
         </el-table-column>
-        <el-table-column :width="150" label="Прослушать">
+        <el-table-column :width="130" label="Прослушать">
             <template #default="{ row }">
                 <el-button v-for="(audio, index) in row.audioArray" :key="index" circle plain type="warning" @click="playAudio(audio)">
                     <el-icon>
@@ -40,12 +40,12 @@
               </el-select>
             </template>
         </el-table-column>
-        <el-table-column prop="selfLead" label="Сам перевел">
+        <el-table-column prop="selfLead" :width="110" label="Сам перевел">
             <template #default="{ row }">
                 <p>{{ row.selfLead ? 'Сам' : 'На брокера' }}</p>
             </template>
         </el-table-column>
-        <el-table-column prop="broker" label="Брокер"></el-table-column>
+        <el-table-column prop="broker" :width="140" label="Брокер"></el-table-column>
         <el-table-column :width="150" prop="commentOKK" label="Коментарий">
             <template #default="{ row }">
                 <el-input v-model="row.commentOKK"></el-input>

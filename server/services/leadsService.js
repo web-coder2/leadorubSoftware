@@ -60,6 +60,28 @@ async function upsertNewLeadsData(lead) {
                     }
                 );
                 return; 
+            } else {
+                const oldEntry = await leadsModel.findOneAndDelete({
+                    date: lead.date,
+                    phone: lead.phone,
+                })
+        
+                const newEntry = new leadsModel({
+                    date: lead.date,
+                    phone: lead.phone,
+                    userName: lead.userName,
+                    broker: lead.broker,
+                    price: lead.price,
+                    audioArray: lead.audioArray,
+                    residenceStatus: lead.residenceStatus,
+                    statusOKK: lead.statusOKK,
+                    selfLead: lead.selfLead,
+                    user: lead.user,
+                    countHold: lead.countHold,
+                    isEdited: lead.isEdited
+                })
+        
+                await newEntry.save()
             }
         } else {
             const newEntry = new leadsModel({
