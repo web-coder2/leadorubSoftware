@@ -47,8 +47,18 @@
                 </template>
               </el-table-column>
               <el-table-column prop="price" label="Цена"></el-table-column>
-              <!-- <el-table-column prop="countHold" label="Кол-во холдов"></el-table-column> -->
-              <el-table-column prop="offerName" label="Офер"></el-table-column>
+              <el-table-column prop="countHold" label="Кол-во холдов">
+                <template #default="{ row }">
+                    <div style="display: flex; align-items: center">
+                      <p>{{ row.countHold }}</p>
+                      <el-button v-if="row.offersList.length > 0" @click="openInfoModalLead(row)" circle style="margin-left: 10px">
+                        <el-icon>
+                          <Plus/>
+                        </el-icon>
+                      </el-button>
+                    </div>
+                </template>
+              </el-table-column>
             </el-table>
   
             <Pagination :tableData="leadsTableData" :rowsInPage="rowsInPage" @page-change="handlePageChange"></Pagination>
@@ -76,6 +86,18 @@
         </el-tab-pane>
       </el-tabs>
     </div>
+
+    <el-dialog title="Информация о системном лиде" v-model="isShowModalLeadInfo" width="700px">
+      <h3 style="margin-bottom: 15px;">С этого лида была переведено:</h3>
+      <ul style="list-style: none; padding: 0;">
+        <li v-for="(item, index) in isShowLeadObjectToModal.offersList" :key="index" style="padding: 10px; margin-bottom: 8px; background-color: #f5f5f5; border-radius: 4px; display: flex; flex-direction: column;">
+          <span><strong>Оффер</strong> {{ item.offerName }}</span>
+          <span><strong>Цена</strong> {{ item.price }}</span>
+          <span><strong>Бркоер</strong> {{ item.broker }}</span>
+          <span><strong>Статус</strong> {{ item.status }}</span>
+        </li>
+      </ul>
+    </el-dialog>
 
 
     <el-dialog title="Создание системного лида" v-model="isShowModalCreateLead" width="500px">
@@ -131,6 +153,7 @@
 
   import FormItemSelect from '../components/FormItemSelect.vue'
   import { ElMessage } from 'element-plus';
+  import { Plus } from '@element-plus/icons-vue'
 
   
   export default {
@@ -148,6 +171,7 @@
         selectedStatuses: null,
         selectedUsers: null,
         isShowModalCreateLead: false,
+        isShowModalLeadInfo: false,
         newLeadsObject: {
           date: dayjs().format('YYYY-MM-DD'),
           broker: 'Володя Банкир',
@@ -160,12 +184,14 @@
           userName: '',
           countHold: 0,
         },
+        isShowLeadObjectToModal: null,
         usersList: [],
       }
     },
     components: {
       Pagination,
-      FormItemSelect
+      FormItemSelect,
+      Plus,
     },
     methods: {
       handleTabClick(tab) {
@@ -174,6 +200,10 @@
         } else if (tab.name === 'another') {
             this.fetchUsersTrasnfers()
         }
+      },
+      openInfoModalLead(lead) {
+        this.isShowLeadObjectToModal = lead
+        this.isShowModalLeadInfo = true
       },
       async fetchLeads() {
         const params = {

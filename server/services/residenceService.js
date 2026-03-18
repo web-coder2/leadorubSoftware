@@ -65,6 +65,7 @@ async function getLeadsOnePhone(gte, lte, phone) {
             status: "created",
             broker: undefined,
             countHold: 0,
+            offersList: []
         }
 
         let currentStatus = ""  // текущий статус во время итераций
@@ -75,33 +76,38 @@ async function getLeadsOnePhone(gte, lte, phone) {
         // status будет или hold или confirmed или refused
         // а countHold будет 1 + 1 + 1
 
-        let holdsArray = []
+        leadsByPhone.forEach((item) => {
+            if (allowedHolds.includes(item.status)) {
+                residenceInfo.price += item?.price?.offer
+                residenceInfo.countHold += 1
+                // финальный статус
+                holdStatus = item.status ?? 'created'
 
-        let leadsOnHold = leadsByPhone.filter((item) => {
-            return allowedHolds.includes(item.status)
+                residenceInfo.offersList.push({
+                    offerName: item?.offerId?.name ?? '',
+                    broker: item?.userId?.name ?? '',
+                    price: item?.price?.offer,
+                    status: item?.status ?? 'created',
+                })
+
+            } else {
+                // изменяем текущий статус
+                currentStatus = item.status
+                
+                residenceInfo.offersList.push({
+                    offerName: item?.offerId?.name ?? '',
+                    broker: item?.userId?.name ?? '',
+                    price: allowedHolds.includes(item.status) ? item?.price?.offer : 0,
+                    status: item?.status ?? 'created',
+                })
+            }
+
+            residenceInfo.broker = item.userId.name
+            residenceInfo.status = holdStatus !== null ? holdStatus : currentStatus
+
         })
 
-        if (leadsOnHold.length > 0) {
-            leadsOnHold.forEach((item) => {
-                holdsArray.push({
-                    price: item?.price?.offer ?? 0,
-                    status: item.status,
-                    broker: item?.userId?.name ?? '',
-                    countHold: 1,
-                    offerName: item?.offerId?.name ?? '',
-                })
-            })
-        } else {
-            holdsArray.push({
-                price: 0,
-                status: leadsByPhone[0]?.status ?? 'created',
-                broker: leadsByPhone[0]?.userId?.name ?? '',
-                countHold: 0,
-                offerName: leadsByPhone[0]?.offerId?.name ?? '',
-            })
-        }
-
-        return holdsArray
+        return residenceInfo
     } catch (e) {
         console.log(e.message)
     }

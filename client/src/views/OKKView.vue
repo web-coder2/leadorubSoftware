@@ -15,15 +15,15 @@
     <el-button style="margin-bottom: 10px" plain type="warning" @click="isManualeShow = true">Открыть памятку</el-button>
 
     <el-table :data="tableData" style="width: 100%">
-        <el-table-column prop="date" label="Дата"></el-table-column>
-        <el-table-column prop="phone" label="Телефон"></el-table-column>
+        <el-table-column :width="100" prop="date" label="Дата"></el-table-column>
+        <el-table-column :width="120" prop="phone" label="Телефон"></el-table-column>
         <!-- <el-table-column prop="userName" label="Имя"></el-table-column> -->
-        <el-table-column label="Лидоруб">
+        <el-table-column :width="200" label="Лидоруб">
             <template #default="{ row }">
                 <FormItemSelect v-if="usersList" v-model="row.userName" :options="usersList" />
             </template>
         </el-table-column>
-        <el-table-column label="Прослушать">
+        <el-table-column :width="150" label="Прослушать">
             <template #default="{ row }">
                 <el-button v-for="(audio, index) in row.audioArray" :key="index" circle plain type="warning" @click="playAudio(audio)">
                     <el-icon>
@@ -32,7 +32,7 @@
                 </el-button>
             </template>
         </el-table-column>
-        <el-table-column label="Установить ОКК">
+        <el-table-column :width="150" label="Установить ОКК">
             <template #default="{ row }">
               <el-select v-model="row.statusOKK" placeholder="Выберите статус" style="width: 120px;">
                 <el-option :label="'Целевой'" :value="true"></el-option>
@@ -46,7 +46,7 @@
             </template>
         </el-table-column>
         <el-table-column prop="broker" label="Брокер"></el-table-column>
-        <el-table-column prop="commentOKK" label="Коментарий">
+        <el-table-column :width="150" prop="commentOKK" label="Коментарий">
             <template #default="{ row }">
                 <el-input v-model="row.commentOKK"></el-input>
             </template>
@@ -56,7 +56,7 @@
                 <el-badge :value="row.residenceStatus" :type="getTypeOfBadge(row.residenceStatus)"></el-badge>
               </template>
         </el-table-column>
-        <el-table-column label="Проверен">
+        <el-table-column :width="100" label="Проверен">
             <template #default="{ row }">
                 <el-checkbox v-model="row.isEdited"></el-checkbox>
             </template>

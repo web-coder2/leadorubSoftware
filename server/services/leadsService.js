@@ -35,25 +35,14 @@ async function upsertNewLeadsData(lead) {
 
     try {
 
+        console.log(lead)
+
         const entryFromDB = await leadsModel.findOne({
             date: lead.date,
             phone: lead.phone,
-            // offerName: lead.offerName
         })
 
         if (entryFromDB) {
-
-            if (entryFromDB.offerName === "" && lead.offerName !== "") {
-                entryFromDB.offerName = lead.offerName
-            } else if (entryFromDB.offerName === lead.offerName) {
-                // зделать $set update
-            } else if (entryFromDB.offerName === "" && lead.offerName === "") {
-                // точно так же сделать $set update
-            }
-
-
-            // TODO: продумать логику чтобы не было дублей либо потом добавить флажок или удалять вручную лиды (но сработает на заднее число)
-            // TODO: продумать все моменты когда переобновлять полностью либо дополнять вторичные свойста существующему лиду 
 
             if (entryFromDB.isEdited === true) {
                 await leadsModel.updateOne(
@@ -62,11 +51,11 @@ async function upsertNewLeadsData(lead) {
                         $set: {
                             broker: lead.broker,
                             price: lead.price,
-                            // offerName: lead.offerName,
                             audioArray: lead.audioArray,
-                            residenceStatus: lead.residenceStatus, // возможно потом это убрать если админ будет менять этот статус тоже
+                            residenceStatus: lead.residenceStatus,
                             selfLead: lead.selfLead,
                             countHold: lead.countHold,
+                            offersList: lead.offersList
                         }
                     }
                 );
@@ -86,7 +75,7 @@ async function upsertNewLeadsData(lead) {
                 user: lead.user,
                 countHold: lead.countHold,
                 isEdited: lead.isEdited,
-                offerName: lead.offerName
+                offersList: lead.offersList
             })
     
             await newEntry.save()

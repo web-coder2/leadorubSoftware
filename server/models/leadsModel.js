@@ -22,10 +22,15 @@ const leadsModel = new Schema({
         required: false,
         default: ""
     },
-    offerName: {
-        type: String,
+    offersList: {
+        type: [{
+            offerName: String,
+            broker: String,
+            price: Number,
+            status: String,
+        }],
         required: false,
-        default: ''
+        default: []
     }
 })
 
