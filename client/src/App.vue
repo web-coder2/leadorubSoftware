@@ -62,7 +62,8 @@ export default {
           label: 'Лиды',
           path: '/leads',
           icon: Service,
-          condition: () => this.rankName === 'admin',
+          // condition: () => this.rankName === 'admin',
+          condition: null,
         },
         {
           label: 'Пользователи',

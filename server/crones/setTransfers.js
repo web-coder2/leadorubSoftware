@@ -59,7 +59,7 @@ async function setTransfersToDB(gte, lte) {
 function setTransfersCrone() {
     const croneHour = '0 * * * *'
 
-    setTransfersToDB(new Date('2026-03-12'), new Date('2026-03-12'))
+    setTransfersToDB(new Date(), new Date())
   
     crone.schedule(croneHour, () => {
         setTransfersToDB(new Date(), new Date())

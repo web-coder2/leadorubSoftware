@@ -24,7 +24,7 @@
   
       <!-- Вкладки для выбора таблицы -->
       <el-tabs v-model="activeTab" style="margin-top: 20px" type="border-card" @tab-click="handleTabClick">
-        <el-tab-pane label="Системные лиды" name="leads">
+        <el-tab-pane v-if="rankName === 'admin'" label="Системные лиды" name="leads">
           <div class="table-data">
             <el-table :data="currentData" style="width: 100%">
               <el-table-column prop="date" label="Дата"></el-table-column>
@@ -74,7 +74,7 @@
                 <el-table-column prop="description" label="Описание"></el-table-column>
                 <el-table-column prop="broker" label="Брокер"></el-table-column>
                 <el-table-column prop="countHold" label="Кол-во холдов"></el-table-column>
-                <el-table-column prop="price" label="Цена"></el-table-column>
+                <el-table-column v-if="rankName === 'admin'" prop="price" label="Цена"></el-table-column>
                 <el-table-column prop="residenceStatus" label="статус">
                   <template #default="{ row }">
                     <el-badge :value="row.residenceStatus" :type="getTypeOfBadge(row.residenceStatus)"></el-badge>
@@ -186,6 +186,8 @@
         },
         isShowLeadObjectToModal: null,
         usersList: [],
+        userObject: null,
+        rankName: null
       }
     },
     components: {
@@ -200,7 +202,7 @@
         } else if (tab.name === 'another') {
             this.fetchUsersTrasnfers()
         }
-      },
+      }, 
       openInfoModalLead(lead) {
         this.isShowLeadObjectToModal = lead
         this.isShowModalLeadInfo = true
@@ -309,6 +311,10 @@
     async beforeMount() {
       await this.getUsersList()
       await this.fetchAllUsers()
+
+      this.userObject = this.$store.getters['getUserObject']
+      this.rankName = this.userObject.rankName
+
     }
   }
 </script>

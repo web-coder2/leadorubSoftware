@@ -31,11 +31,45 @@ async function getLeadsToDate(gte, lte) {
 
 }
 
+
+async function removeDublicates(gte, lte, phone) {
+    let leadsToDateAndPhone = await leadsModel.find({
+        date: {
+            $gte: gte,
+            $lte: lte
+        },
+        phone: phone
+    });
+  
+    if (leadsToDateAndPhone.length > 1) {
+
+        console.log('Найден дубликат ')
+
+        const editedLeads = leadsToDateAndPhone.filter((lead) => lead.isEdited === true);
+  
+        let leadToKeep;
+  
+        if (editedLeads.length > 0) {
+            leadToKeep = editedLeads[0];
+        } else {
+            leadToKeep = leadsToDateAndPhone[0];
+        }
+
+        const idsToDelete = leadsToDateAndPhone
+            .filter((lead) => lead._id.toString() !== leadToKeep._id.toString())
+            .map((lead) => lead._id);
+  
+        if (idsToDelete.length > 0) {
+            await leadsModel.deleteMany({ _id: { $in: idsToDelete } });
+        }
+    }
+}
+
 async function upsertNewLeadsData(lead) {
 
     try {
 
-        console.log(lead)
+        // console.log(lead)
 
         const entryFromDB = await leadsModel.findOne({
             date: lead.date,
@@ -43,6 +77,9 @@ async function upsertNewLeadsData(lead) {
         })
 
         if (entryFromDB) {
+
+            // вызвать функцию которая удалит дублируюзие (если они есть)
+            let resultByDeleteDubles = await removeDublicates(lead.date, lead.date, lead.phone)
 
             if (entryFromDB.isEdited === true) {
                 await leadsModel.updateOne(
@@ -78,7 +115,8 @@ async function upsertNewLeadsData(lead) {
                     selfLead: lead.selfLead,
                     user: lead.user,
                     countHold: lead.countHold,
-                    isEdited: lead.isEdited
+                    isEdited: lead.isEdited,
+                    offersList: lead.offersList,
                 })
         
                 await newEntry.save()
