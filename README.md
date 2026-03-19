@@ -4,7 +4,7 @@
 
 # instruction
 чтобы задеплоить это приложение нужно сделать сначала:
-1) npm run build (сбилдить vite vue часть)  => client/dist
+1) npm run build (сбилдить vite vue часть)  => client/dist  (UPD если изменения только на бэкенде то повтороно npm run build не нужно )
 2) docker build -t <login/imageName> .
 3) docker push <login/imageName>
 4) на сервере спулить имадж docker pull

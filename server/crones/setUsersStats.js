@@ -90,10 +90,12 @@ async function setUsersStatsToDB(gte, lte) {
 
 function setUsersStatsCrone() {
     const cronHour = '0,30 * * * *'
+    const cronMinute = '*/15 * * * *'
+    const cronExpression = '*/5 * * * *'
 
-    setUsersStatsToDB(new Date('2026-03-18'), new Date('2026-03-18'))
+    setUsersStatsToDB(new Date(), new Date())
   
-    crone.schedule(croneHour, () => {
+    crone.schedule(cronExpression, () => {
         setUsersStatsToDB(new Date(), new Date())
     })
   }
