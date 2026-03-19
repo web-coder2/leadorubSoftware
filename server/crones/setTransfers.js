@@ -57,13 +57,13 @@ async function setTransfersToDB(gte, lte) {
 }
 
 function setTransfersCrone() {
-    const croneHour = '0 * * * *'
+  const cronHour = '0,30 * * * *'
 
-    setTransfersToDB(new Date(), new Date())
+  setTransfersToDB(new Date(), new Date())
   
-    crone.schedule(croneHour, () => {
-        setTransfersToDB(new Date(), new Date())
-    })
-  }
+  crone.schedule(croneHour, () => {
+    setTransfersToDB(new Date(), new Date())
+  })
+}
 
 module.exports = { setTransfersCrone }

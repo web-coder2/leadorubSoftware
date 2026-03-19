@@ -20,11 +20,11 @@
         </div>
       </div>
 
-      <el-button style="margin-top: 20px; margin-bottom: 20px" type="success" plain @click="isShowModalCreateLead = true">Создать лид</el-button>
+      <el-button v-if="rankName === 'admin'" style="margin-top: 20px; margin-bottom: 20px" type="success" plain @click="isShowModalCreateLead = true">Создать лид</el-button>
   
       <!-- Вкладки для выбора таблицы -->
       <el-tabs v-model="activeTab" style="margin-top: 20px" type="border-card" @tab-click="handleTabClick">
-        <el-tab-pane v-if="rankName === 'admin'" label="Системные лиды" name="leads">
+        <el-tab-pane label="Системные лиды" name="leads">
           <div class="table-data">
             <el-table :data="currentData" style="width: 100%">
               <el-table-column prop="date" label="Дата"></el-table-column>
@@ -35,19 +35,20 @@
                   <p>{{ row.statusOKK ? 'Целевой' : 'Нецелевой' }}</p>
                 </template>
               </el-table-column>
-              <el-table-column prop="selfLead" label="Сам перевел">
+              <el-table-column prop="commentOKK" label="Коментарий"></el-table-column>
+              <el-table-column v-if="rankName === 'admin'" prop="selfLead" label="Сам перевел">
                 <template #default="{ row }">
                   <p>{{ row.selfLead ? 'Сам' : 'На брокера' }}</p>
                 </template>
               </el-table-column>
-              <el-table-column prop="broker" label="Брокер"></el-table-column>
+              <el-table-column v-if="rankName === 'admin'" prop="broker" label="Брокер"></el-table-column>
               <el-table-column prop="residenceStatus" label="Статус">
                 <template #default="{ row }">
                   <el-badge :value="row.residenceStatus" :type="getTypeOfBadge(row.residenceStatus)"></el-badge>
                 </template>
               </el-table-column>
-              <el-table-column prop="price" label="Цена"></el-table-column>
-              <el-table-column prop="countHold" label="Кол-во холдов">
+              <el-table-column v-if="rankName === 'admin'" prop="price" label="Цена"></el-table-column>
+              <el-table-column v-if="rankName === 'admin'" prop="countHold" label="Кол-во холдов">
                 <template #default="{ row }">
                     <div style="display: flex; align-items: center">
                       <p>{{ row.countHold }}</p>
@@ -65,7 +66,7 @@
           </div>
         </el-tab-pane>
   
-        <el-tab-pane label="ручные лиды" name="another">
+        <!-- <el-tab-pane label="ручные лиды" name="another">
             <el-table :data="usersTransfersData" style="width: 100%">
                 <el-table-column prop="date" label="Дата"></el-table-column>
                 <el-table-column prop="phone" label="Телефон"></el-table-column>
@@ -83,7 +84,7 @@
                 <el-table-column prop="selfTransfer" label="сам перевел"></el-table-column>
                 <el-table-column prop="statusOKK" label="ОКК"></el-table-column>
               </el-table>
-        </el-tab-pane>
+        </el-tab-pane> -->
       </el-tabs>
     </div>
 
@@ -165,7 +166,7 @@
         leadsTableData: [],
         usersTransfersData: [],
         currentData: [],
-        rowsInPage: 5,
+        rowsInPage: 10,
         statusesArray: ['hold', 'confirmed', 'refused', 'invalid', 'breaked', 'created'],
         usersArray: [],
         selectedStatuses: null,

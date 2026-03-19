@@ -15,19 +15,41 @@ const { getAllUsers, getUserIdByName, upserUsersStatsToDB } = require('../servic
 async function setUsersStatsToDB(gte, lte) {
     
     const usersCalls = await getSkorozvonCalls(gte, lte)
+    
+    const usersCallsWithoutZeroCalls = usersCalls.filter((callUser) => {
+        return callUser.countCalls > 0
+    })
+
     const usersLeads = await getLeadsToDate(gte, lte)
 
     const aggregatedUsersLeads = aggregateUsersLeads(usersLeads)
 
-    for (let user of aggregatedUsersLeads) {
+    // for (let user of aggregatedUsersLeads) {
 
-        let usersCallsObject = usersCalls.find((item) => {
-            return item.name === user.userName
+    //     let usersCallsObject = usersCalls.find((item) => {
+    //         return item.name === user.userName
+    //     })
+
+    for (let user of usersCallsWithoutZeroCalls) {
+
+        let usersCallsObject = aggregatedUsersLeads.find((item) => {
+            return item.userName === user.name
         })
 
         if (usersCallsObject) {
-            user.email = usersCallsObject.email
-            user.countCalls = usersCallsObject.countCalls
+            // user.email = usersCallsObject.email
+            // user.countCalls = usersCallsObject.countCalls
+            user.userName = usersCallsObject.userName
+            user.countLeads = usersCallsObject.countLeads
+            user.countHolds = usersCallsObject.countHolds
+            user.sumHold = usersCallsObject.sumHold
+            user.countTargets = usersCallsObject.countTargets
+        } else {
+            user.userName = user.name
+            user.countLeads = 0
+            user.countHolds = 0
+            user.sumHold = 0
+            user.countTargets = 0
         }
 
         let fullUserObject = await getUserIdByName(user.userName)
@@ -43,7 +65,7 @@ async function setUsersStatsToDB(gte, lte) {
             user.salary = await calculateSalaryHoldorub(gte, lte, user)
         }
 
-        let clearData = await calculateClearByUser(user, aggregatedUsersLeads.length)
+        let clearData = await calculateClearByUser(user, usersCallsWithoutZeroCalls.length)
 
         user.clear = clearData.clear
         user.brokerSalary = clearData.brokerSalary
@@ -56,16 +78,20 @@ async function setUsersStatsToDB(gte, lte) {
         user.scriptBonus = scriptBonus
         user.date = dayjs(gte).format('YYYY-MM-DD')
 
+        console.log(user, '!!!!!!')
+
         const result = await upserUsersStatsToDB(user)
     }
+
+    console.log(`Обновление статисткиа юзеров завершилось в БД в ${dayjs(gte).format('YYYY-MM-DD')}`)
 
 }
 
 
 function setUsersStatsCrone() {
-    const croneHour = '0 * * * *'
+    const cronHour = '0,30 * * * *'
 
-    setUsersStatsToDB(new Date(), new Date())
+    setUsersStatsToDB(new Date('2026-03-18'), new Date('2026-03-18'))
   
     crone.schedule(croneHour, () => {
         setUsersStatsToDB(new Date(), new Date())

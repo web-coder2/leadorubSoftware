@@ -1,11 +1,11 @@
 <template>
   <el-container style="height: 100vh;">
-    <el-aside v-if="showSidebar && !isLoading" width="200px" style="height: 100vh; background-color: #2d2d2d;">
+    <el-aside :width="isMobile ? '60px' : '200px'" v-if="showSidebar && !isLoading" style="height: 100vh; background-color: #2d2d2d;">
       <el-menu default-active="1" background-color="transparent" text-color="#fff" active-text-color="#ffd04b" router style="height: 100%; display: flex; flex-direction: column; justify-content: flex-start;">
         <template v-for="(item, index) in menuItems" :key="index">
           <el-menu-item v-if="!item.condition || item.condition()" :index="item.path" :to="item.path">
             <el-icon><component :is="item.icon"></component></el-icon>
-            {{ item.label }}
+            <span v-if="!isMobile">{{ item.label }}</span>
           </el-menu-item>
         </template>
       </el-menu>
@@ -30,6 +30,7 @@ export default {
       route: null,
       menuItems: [],
       isLoading: true,
+      isMobile: true,
     }
   },
   computed: {
@@ -93,6 +94,9 @@ export default {
     this.initializeMenu()
     console.log(this.userObject)
     this.isLoading = false
+
+    this.isMobile = window.innerWidth < 480 ? true : false
+
   }
 }
 </script>

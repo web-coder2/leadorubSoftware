@@ -25,7 +25,7 @@
         <el-table-column prop="countLeads" label="Лиды"></el-table-column>
         <el-table-column prop="countTargets" label="Целевые"></el-table-column>
         <el-table-column prop="countHolds" label="Холды"></el-table-column>
-        <el-table-column prop="sumHold" label="Сумма холдов"></el-table-column>
+        <el-table-column v-if="userRole === 'admin'" prop="sumHold" label="Сумма холдов"></el-table-column>
         <el-table-column prop="salary" label="Зарплата"></el-table-column>
         <el-table-column prop="scriptBonus" label="Бонус"></el-table-column>
         <el-table-column prop="salary + scriptBonus" label="Итого ЗП">
@@ -33,7 +33,7 @@
                 <p>{{ row.salary + row.scriptBonus }}</p>
             </template>
         </el-table-column>
-        <el-table-column v-if="userRole === 'admin'" prop="clear" label="Чистая"></el-table-column>
+        <el-table-column prop="clear" label="Чистая"></el-table-column>
         <!-- <el-table-column prop="brokerSalary" label="ЗП брокерам"></el-table-column> -->
     </el-table>
     
