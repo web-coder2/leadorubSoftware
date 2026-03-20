@@ -91,6 +91,7 @@ async function upsertNewLeadsData(lead) {
                             audioArray: lead.audioArray,
                             residenceStatus: lead.residenceStatus,
                             selfLead: lead.selfLead,
+                            selfLeadName: lead.selfLeadName,
                             countHold: lead.countHold,
                             offersList: lead.offersList
                         }
@@ -113,6 +114,7 @@ async function upsertNewLeadsData(lead) {
                     residenceStatus: lead.residenceStatus,
                     statusOKK: lead.statusOKK,
                     selfLead: lead.selfLead,
+                    selfLeadName: lead.selfLeadName,
                     user: lead.user,
                     countHold: lead.countHold,
                     isEdited: lead.isEdited,
@@ -132,6 +134,7 @@ async function upsertNewLeadsData(lead) {
                 residenceStatus: lead.residenceStatus,
                 statusOKK: lead.statusOKK,
                 selfLead: lead.selfLead,
+                selfLeadName: lead.selfLeadName,
                 user: lead.user,
                 countHold: lead.countHold,
                 isEdited: lead.isEdited,

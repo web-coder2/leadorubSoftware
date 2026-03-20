@@ -36,11 +36,7 @@
                 </template>
               </el-table-column>
               <el-table-column prop="commentOKK" label="Коментарий"></el-table-column>
-              <el-table-column v-if="rankName === 'admin'" prop="selfLead" label="Сам перевел">
-                <template #default="{ row }">
-                  <p>{{ row.selfLead ? 'Сам' : 'На брокера' }}</p>
-                </template>
-              </el-table-column>
+              <el-table-column v-if="rankName === 'admin'" prop="selfLeadName" label="Сам перевел" />
               <el-table-column v-if="rankName === 'admin'" prop="broker" label="Брокер"></el-table-column>
               <el-table-column prop="residenceStatus" label="Статус">
                 <template #default="{ row }">
@@ -123,8 +119,9 @@
         </el-form-item>
         <el-form-item label="сам перевел ?" prop="selfLead">
           <el-select v-model="newLeadsObject.selfLead">
-            <el-option :value="true" :label="'Сам'" />
-            <el-option :value="false" :label="'На брокера'" />
+            <!-- <el-option :value="true" :label="'Сам'" />
+            <el-option :value="false" :label="'На брокера'" /> -->
+            <el-option v-for="item in selfLeadsOptions" :label="item" :value="item" />
           </el-select>
         </el-form-item>
         <el-form-item label="резиденция" prop="residenceStatus">
@@ -188,7 +185,8 @@
         isShowLeadObjectToModal: null,
         usersList: [],
         userObject: null,
-        rankName: null
+        rankName: null,
+        selfLeadsOptions: ['Сам', 'На брокера', 'Ручной'],
       }
     },
     components: {

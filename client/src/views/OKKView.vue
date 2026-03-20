@@ -40,11 +40,7 @@
               </el-select>
             </template>
         </el-table-column>
-        <el-table-column prop="selfLead" :width="110" label="Сам перевел">
-            <template #default="{ row }">
-                <p>{{ row.selfLead ? 'Сам' : 'На брокера' }}</p>
-            </template>
-        </el-table-column>
+        <el-table-column prop="selfLeadName" :width="110" label="Сам перевел" />
         <el-table-column prop="broker" :width="140" label="Брокер"></el-table-column>
         <el-table-column :width="150" prop="commentOKK" label="Коментарий">
             <template #default="{ row }">

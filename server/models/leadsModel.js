@@ -8,7 +8,17 @@ const leadsModel = new Schema({
     audioArray: Array,
     residenceStatus: String,
     statusOKK: Boolean,
-    selfLead: Boolean,
+    selfLead: Boolean,  // как я понял 'Сам' ставит сдесь true а 'На брокера' и 'Ручной' false
+    selfLeadName: {
+        type: String,
+        required: true,
+        default: 'На брокера',
+        enum: [
+            'Сам',
+            'На брокера',
+            'Ручной'
+        ]
+    },
     user: {
         type: Schema.Types.ObjectId,
         ref: 'usersModel',

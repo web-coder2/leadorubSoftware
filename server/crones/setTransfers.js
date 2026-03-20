@@ -39,6 +39,7 @@ async function setTransfersToDB(gte, lte) {
           residenceStatus: leadResidence.status,
           statusOKK: false,
           selfLead: isSelfLead,
+          selfLeadName: isSelfLead ? 'Сам' : 'На брокера',
           user: userIdObject?._id ?? undefined,
           userName: leadUser,
           countHold: leadResidence.countHold,

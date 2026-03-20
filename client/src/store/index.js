@@ -3,8 +3,8 @@ import axios from 'axios'
 
 const store = createStore({
   state: {
-    // apiBaseURL: 'http://localhost:3000/',
-    apiBaseURL: 'http://31.130.151.240:3000/',
+    apiBaseURL: 'http://localhost:3000/',
+    // apiBaseURL: 'http://31.130.151.240:3000/',
     userObject: null,
   },
   getters: {

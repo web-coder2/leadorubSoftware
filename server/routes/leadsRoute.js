@@ -88,6 +88,16 @@ router.post('/api/leads/create', async (req, res) => {
 
         const userId = await getUserIdByName(leadObject.userName)
 
+        let selfLeadValue = false
+
+        if (leadObject.selfLead === 'Сам') {
+            selfLeadValue = true
+        } else if (leadObject.selfLead === 'На брокера') {
+            selfLeadValue = false
+        } else if (leadObject.selfLead === 'Ручной') {
+            selfLeadValue = false
+        }
+
         const newLeadObject = leadsModel({
             date: leadObject.date,
             broker: leadObject.broker,
@@ -96,7 +106,9 @@ router.post('/api/leads/create', async (req, res) => {
             audioArray: leadObject.audioArray,
             residenceStatus: leadObject.residenceStatus,
             statusOKK: leadObject.statusOKK,
-            selfLead: leadObject.selfLead,
+            // selfLead: leadObject.selfLead.value,
+            selfLead: selfLeadValue,
+            selfLeadName: leadObject.selfLead,
             user: userId?._id ?? null,
             userName: leadObject.userName,
             countHold: leadObject.countHold,
