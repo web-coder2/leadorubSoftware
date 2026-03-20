@@ -1,6 +1,8 @@
 <template>
     <h3>Пользователи</h3>
 
+    <el-button plain type="warning" @click="visibleModalCreateUser = true">Создать пользователя</el-button>
+
     <el-table :data="usersArray" style="width: 100%">
         <el-table-column prop="email" label="Логин"></el-table-column>
         <el-table-column prop="name" label="Имя"></el-table-column>
@@ -17,6 +19,31 @@
             </template>
         </el-table-column>
     </el-table>
+
+
+    <el-dialog title="Создание пользователя" v-model="visibleModalCreateUser" width="500px">
+        <el-form :model="newCreatedUser" label-width="120px">
+          <el-form-item label="Логин" prop="email">
+            <el-input v-model="newCreatedUser.email"></el-input>
+          </el-form-item>
+          <el-form-item label="Имя" prop="name">
+            <el-input v-model="newCreatedUser.name"></el-input>
+          </el-form-item>
+          <el-form-item label="Ранк" prop="rankName">
+            <el-input v-model="newCreatedUser.rankName"></el-input>
+          </el-form-item>
+          <el-form-item label="Пароль" prop="password">
+            <el-input v-model="newCreatedUser.password"></el-input>
+          </el-form-item>
+          <el-form-item label="skorozvonId" prop="skorozvonId">
+            <el-input type="number" v-model="newCreatedUser.skorozvonId"></el-input>
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="visibleModalCreateUser = false">Отмена</el-button>
+          <el-button type="primary" @click="createNewUser">Сохранить</el-button>
+        </div>
+      </el-dialog>
 
 
     <el-dialog title="Редактировать пользователя" v-model="isShowModalEditUser" width="500px">
@@ -53,6 +80,14 @@
                 usersArray: [],
                 editedUser: null,
                 isShowModalEditUser: false,
+                visibleModalCreateUser: false,
+                newCreatedUser: {
+                    email: "",
+                    name: "",
+                    password: "",
+                    skorozvonId: 0,
+                    rankName: "leadorub"
+                },
             }
         },
         async beforeMount() {
@@ -69,6 +104,36 @@
 
                 this.usersArray = response.data;
             },
+            async createNewUser() {
+                try {
+                    const response = await this.$store.dispatch('createDataList', {
+                        col: 'api/users/create',
+                        data: {
+                            userObject: this.newCreatedUser
+                        }
+                    });
+
+                    this.newCreatedUser = {
+                        email: "",
+                        name: "",
+                        password: "",
+                        skorozvonId: 0,
+                        rankName: "leadorub"
+                    },
+
+                    ElMessage({
+                        message: 'Пользователь успешно создан',
+                        type: 'success',
+                    });
+
+                } catch (e) {
+                    console.log(e.message)
+                    ElMessage({
+                        message: `ошибка при создание юзера ${e.message}`,
+                        type: 'error',
+                    });
+                }
+            },  
             async deleteUser(id) {
                 try {
                     const response = await this.$store.dispatch('createDataList', {

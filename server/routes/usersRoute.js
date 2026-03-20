@@ -39,6 +39,34 @@ router.post('/api/users/auth', async (req, res) => {
 
 })
 
+router.post('/api/users/create', async (req, res) => {
+
+    try {
+
+        const { userObject } = req.body
+
+        const newUserObject = usersModel({
+            email: userObject.email,
+            name: userObject.name,
+            skorozvonId: userObject.skorozvonId,
+            password: userObject.password,
+            rankName: userObject.rankName
+        })
+
+        const result = await newUserObject.save()
+
+        res.status(200).json({
+            msg: 'user created successfuly'
+        })
+
+    } catch (e) {
+        console.log(e.message)
+        res.status(500).json({
+            msg: e.message
+        })
+    }
+
+})
 
 router.get('/api/users/getList', async (req, res) => {
     try {
