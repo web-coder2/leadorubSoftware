@@ -8,6 +8,7 @@ const { Router } = require('express');
 const leadsModel = require('../models/leadsModel')
 
 const { getLeadsToDate, aggregateUsersLeads, calculateClearByUser, getLeadsByUser } = require('../services/leadsService.js')
+const { getDifferenceByCalls } = require('../services/skorozvonService.js')
 const { getUserIdByName } = require('../services/usersService')
 
 const router = Router()
@@ -158,6 +159,28 @@ router.get('/api/leads/intensity', async (req, res) => {
             msg: e.message
         })
     }
+})
+
+router.get('/api/test/diffinity', async (req, res) => {
+
+    try {
+
+        let { gte, lte } = req.query
+
+        let data = await getDifferenceByCalls(gte, lte)
+
+
+        res.status(200).json({
+            data: []
+        })
+
+    } catch (e) {
+        res.status(500).json({
+            msg: e.message
+        })
+    }
+
+
 })
 
 module.exports = router

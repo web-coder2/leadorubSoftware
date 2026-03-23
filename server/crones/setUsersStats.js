@@ -7,7 +7,7 @@ const dotenv = require('dotenv')
 const leadsModel = require('../models/leadsModel.js')
 const usersModel = require('../models/usersModel.js')
 
-const { getSkorozvonCalls, getSkorozvonCallsFromProfile } = require('../services/skorozvonService.js')
+const { getSkorozvonCalls, getSkorozvonCallsFromProfile, getDifferenceByCalls } = require('../services/skorozvonService.js')
 const { getLeadsToDate, aggregateUsersLeads, calculateClearByUser } = require('../services/leadsService.js')
 const { calculateSalaryLeadorub, calculateSalaryHoldorub, calculateBonusToTargetsLeadorub, calculateBonusToClearPrice } = require('../services/salaryService.js')
 const { getAllUsers, getUserIdByName, upserUsersStatsToDB } = require('../services/usersService.js')
@@ -63,6 +63,7 @@ async function setUsersStatsToDB(gte, lte) {
         }
 
         let userCallsInfoFromProfile = await getSkorozvonCallsFromProfile(gte, lte, user)
+
 
         user.countCallsWithProfile = userCallsInfoFromProfile
 

@@ -25,13 +25,25 @@ async function getSkorozvonToken() {
     }
 }
 
-async function getSkorozvonCallsFromProfile(gte, lte, user) {
+async function getDifferenceByCalls(gte, lte, user) {
+
+    let dataCallsByAdmin = await getSkorozvonCalls(gte, lte, defaultTotal = false)
+
+    dataCallsByAdmin = dataCallsByAdmin.filter((user) => {
+        return user.countCalls > 0
+    })
+
+    let dataCallsByUser = await getSkorozvonCallsFromProfile(gte, lte, user, defaultTotal = false)
+
+    console.log(dataCallsByAdmin)
+
+}
+
+async function getSkorozvonCallsFromProfile(gte, lte, user, defaultTotal = true) {
 
     try {
 
         if (user.email) {
-
-            console.log(user)
 
             const response = await axios.post('https://app.skorozvon.ru/supreme/users/login?locale=ru', {
                 "user" : {
@@ -46,8 +58,6 @@ async function getSkorozvonCallsFromProfile(gte, lte, user) {
             });
 
             let userToken = response.data.callback_data.headers.authorization
-
-            // console.log(user, userToken)
 
             let result = await axios.get('https://pod5-shard2-lb1.skorozvon.ru/calls', {
                 headers: { Authorization: userToken },
@@ -65,10 +75,28 @@ async function getSkorozvonCallsFromProfile(gte, lte, user) {
                 }
             })
 
+            let callsFullDataArray = []
+
+            if (defaultTotal === false) {
+
+                result.data.data.calls.forEach((call) => {
+                    callsFullDataArray.push({
+                        user: call.manager_name,
+                        phone: call.number.slice(1),
+                        duration: call.duration,
+                        date: call.date
+                    })
+                })
+
+            }
+
             let responseDataByCalls = result.data.data.total
 
-            return responseDataByCalls
-
+            if (defaultTotal === false) {
+                return callsFullDataArray
+            } else if (defaultTotal === true) {
+                return responseDataByCalls
+            }
         }
 
     } catch (e) {
@@ -78,7 +106,7 @@ async function getSkorozvonCallsFromProfile(gte, lte, user) {
 }
 
 
-async function getSkorozvonCalls(gte, lte) {
+async function getSkorozvonCalls(gte, lte, defaultTotal = true) {
 
     const params = {
         limit: 100,
@@ -107,10 +135,27 @@ async function getSkorozvonCalls(gte, lte) {
             headers: { Authorization: `Bearer ${token}` },
             params: userParams,
         });
+
+        let callsFullDataArray = []
+
+        if (defaultTotal === false) {
+
+            responseCalls.data.data.calls.forEach((call) => {
+                callsFullDataArray.push({
+                    user: call.manager_name,
+                    phone: call.number.slice(1),
+                    duration: call.duration,
+                    date: call.date
+                })
+            })
+
+        }
+        
         usersCallsArray.push({
             email: user.email,
             name: user.name,
-            countCalls: responseCalls.data.data.total
+            countCalls: responseCalls.data.data.total,
+            callsArray: callsFullDataArray,
         })
     }
     return usersCallsArray
@@ -223,4 +268,4 @@ async function getLeadTimeline(transfer) {
     }
 }
 
-module.exports = { getSkorozvonToken, getSkorozvonCalls, getLeadsToOneDay, getLeadTimeline, getLeadAudioUrls, getSkorozvonCallsFromProfile }
+module.exports = { getSkorozvonToken, getSkorozvonCalls, getLeadsToOneDay, getLeadTimeline, getLeadAudioUrls, getSkorozvonCallsFromProfile, getDifferenceByCalls }

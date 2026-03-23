@@ -21,8 +21,6 @@ async function upserUsersStatsToDB(userObject) {
 
     try {
 
-        console.log(userObject)
-
         const oldEntry = await usersStats.findOneAndDelete({
             date: userObject.date,
             email: userObject.email,
