@@ -6,6 +6,7 @@ const dotenv = require('dotenv')
 const { Router } = require('express');
 
 const leadsModel = require('../models/leadsModel')
+const usersStats = require('../models/usersStats.js')
 
 const { getLeadsToDate, aggregateUsersLeads, calculateClearByUser, getLeadsByUser } = require('../services/leadsService.js')
 const { getDifferenceByCalls } = require('../services/skorozvonService.js')
@@ -167,17 +168,29 @@ router.get('/api/test/diffinity', async (req, res) => {
 
         let { gte, lte } = req.query
 
-        let data = await getDifferenceByCalls(gte, lte)
+        let usersStatsArrayOfUsers = await usersStats.find({
+            date: {
+                $gte: gte,
+                $lte: lte
+            }
+        })
 
+        // for (let user of usersStatsArrayOfUsers) {
+        //     console.log(user)
+        //     let data = await getDifferenceByCalls(gte, lte, user)
+        // }
+
+        let data = await getDifferenceByCalls(gte, lte, usersStatsArrayOfUsers[0])
 
         res.status(200).json({
-            data: []
+            data: usersStatsArrayOfUsers
         })
 
     } catch (e) {
         res.status(500).json({
             msg: e.message
         })
+        console.log(e.message)
     }
 
 

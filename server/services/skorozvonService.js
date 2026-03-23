@@ -27,19 +27,31 @@ async function getSkorozvonToken() {
 
 async function getDifferenceByCalls(gte, lte, user) {
 
-    let dataCallsByAdmin = await getSkorozvonCalls(gte, lte, defaultTotal = false)
+    // получить данные о звонках от имени админа
+    // let dataCallsByAdmin = await getSkorozvonCalls(gte, lte)
+    let dataCallsByAdmin = await getSkorozvonCallsByUser(gte, lte, user, user.countCalls)
+    // console.log(dataCallsByAdmin, user.email)
 
-    dataCallsByAdmin = dataCallsByAdmin.filter((user) => {
-        return user.countCalls > 0
-    })
+    // взять масив звонков от акаунта лидоруба конкретного
+    let dataCallsByUser = await getSkorozvonCallsFromProfile(gte, lte, user, mode = false)
 
-    let dataCallsByUser = await getSkorozvonCallsFromProfile(gte, lte, user, defaultTotal = false)
+    console.log('from admin: ', dataCallsByAdmin.length, 'from account: ', dataCallsByUser, '!!!!', user.email)
 
-    console.log(dataCallsByAdmin)
+    // взять свойство (масив) от обхекта полученого у конкретного юзера и сравнить
+    // let adminAndUsersCalls = dataCallsByAdmin.callsArray
+    // let clearUsersCallsArray = dataCallsByUser.callsArray
 
+    // console.log(gte, lte, user.name, user.email)
+    // console.log('adminAndUsersCalls: ', adminAndUsersCalls.length, 'clearUsersCallsArray: ', clearUsersCallsArray.length)
+
+    // const uniquePhones = clearUsersCallsArray.filter((phone) => {
+    //     !adminAndUsersCalls.includes(phone)
+    // });
+
+    // console.log(uniquePhones, user)
 }
 
-async function getSkorozvonCallsFromProfile(gte, lte, user, defaultTotal = true) {
+async function getSkorozvonCallsFromProfile(gte, lte, user, mode = true) {
 
     try {
 
@@ -59,44 +71,56 @@ async function getSkorozvonCallsFromProfile(gte, lte, user, defaultTotal = true)
 
             let userToken = response.data.callback_data.headers.authorization
 
-            let result = await axios.get('https://pod5-shard2-lb1.skorozvon.ru/calls', {
-                headers: { Authorization: userToken },
-                params: {
-                    limit: 100,
-                    'date[from]': dayjs(gte).format('YYYY-MM-DD'),
-                    'date[to]': dayjs(lte).format('YYYY-MM-DD'),
-                    'duration[from]': 1,
-                    type: 'all',
-                    current_type: 'all',
-                    direction: 1,
-                    column: 'start',
-                    page: 1,
-                    offset: 0,
-                }
-            })
+            let userCallsPages = Math.ceil(user.callsCount / 100)
+            let userCallsArray = []
 
-            let callsFullDataArray = []
-
-            if (defaultTotal === false) {
-
-                result.data.data.calls.forEach((call) => {
-                    callsFullDataArray.push({
-                        user: call.manager_name,
-                        phone: call.number.slice(1),
-                        duration: call.duration,
-                        date: call.date
-                    })
+            if (mode === true) {
+                let result = await axios.get('https://pod5-shard2-lb1.skorozvon.ru/calls', {
+                    headers: { Authorization: userToken },
+                    params: {
+                        limit: 100,
+                        'date[from]': dayjs(gte).format('YYYY-MM-DD'),
+                        'date[to]': dayjs(lte).format('YYYY-MM-DD'),
+                        'duration[from]': 1,
+                        type: 'all',
+                        current_type: 'all',
+                        direction: 1,
+                        column: 'start',
+                        page: 1,
+                        offset: 0,
+                    }
                 })
+                let responseDataByCalls = result.data.data.total
 
-            }
-
-            let responseDataByCalls = result.data.data.total
-
-            if (defaultTotal === false) {
-                return callsFullDataArray
-            } else if (defaultTotal === true) {
                 return responseDataByCalls
+            } else if (mode === false) {
+                for (let i = 1; i <= userCallsPages; i++) {
+                    let result = await axios.get('https://pod5-shard2-lb1.skorozvon.ru/calls', {
+                        headers: { Authorization: userToken },
+                        params: {
+                            limit: 100,
+                            'date[from]': dayjs(gte).format('YYYY-MM-DD'),
+                            'date[to]': dayjs(lte).format('YYYY-MM-DD'),
+                            'duration[from]': 1,
+                            type: 'all',
+                            current_type: 'all',
+                            direction: 1,
+                            column: 'start',
+                            page: i,
+                            offset: 0,
+                        }
+                    })
+                    let data = result.data.data.calls
+
+                    console.log(data)
+
+                    data.forEach((call) => {
+                        userCallsArray.push(call.number.slice(1))
+                    })
+                }
+                return result
             }
+
         }
 
     } catch (e) {
@@ -106,7 +130,54 @@ async function getSkorozvonCallsFromProfile(gte, lte, user, defaultTotal = true)
 }
 
 
-async function getSkorozvonCalls(gte, lte, defaultTotal = true) {
+async function getSkorozvonCallsByUser(gte, lte, user, countCalls) {
+
+
+    let countPages = Math.ceil(countCalls / 100)
+    let callsArray = []
+
+    const token = await getSkorozvonToken()
+
+    const usersList = await axios.get('https://pod5-shard2-lb1.skorozvon.ru/settings/team.json', {
+        headers: { 
+            Authorization: `Bearer ${token}` 
+        }
+    }).then( res => res.data.data.team )
+
+    let userObject = usersList.find((item) => {
+        return item.email === user.email
+    })
+
+    const params = {
+        limit: 100,
+        'date[from]': dayjs(gte).format('YYYY-MM-DD'),
+        'date[to]': dayjs(lte).format('YYYY-MM-DD'),
+        'duration[from]': 1,
+        type: 'all',
+        offset: 0,
+        users: userObject.id
+    };
+
+    for (let i = 1; i <= countPages; i++) {
+        params['page'] = i
+
+        const responseCalls = await axios.get('https://pod5-shard2-lb1.skorozvon.ru/calls', {
+            headers: { Authorization: `Bearer ${token}` },
+            params: params,
+        });
+
+        let callsData = responseCalls.data.data.calls
+
+        callsData.forEach((call) => {
+            callsArray.push(call.number.slice(1))
+        })
+
+    }
+
+    return callsArray
+}
+
+async function getSkorozvonCalls(gte, lte) {
 
     const params = {
         limit: 100,
@@ -136,27 +207,14 @@ async function getSkorozvonCalls(gte, lte, defaultTotal = true) {
             params: userParams,
         });
 
-        let callsFullDataArray = []
-
-        if (defaultTotal === false) {
-
-            responseCalls.data.data.calls.forEach((call) => {
-                callsFullDataArray.push({
-                    user: call.manager_name,
-                    phone: call.number.slice(1),
-                    duration: call.duration,
-                    date: call.date
-                })
-            })
-
-        }
-        
         usersCallsArray.push({
             email: user.email,
             name: user.name,
-            countCalls: responseCalls.data.data.total,
-            callsArray: callsFullDataArray,
+            countCalls: responseCalls.data.data.total
         })
+
+        let callsFullDataArray = []
+
     }
     return usersCallsArray
 }
