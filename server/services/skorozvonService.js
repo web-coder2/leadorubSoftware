@@ -25,6 +25,58 @@ async function getSkorozvonToken() {
     }
 }
 
+async function getSkorozvonCallsFromProfile(gte, lte, user) {
+
+    try {
+
+        if (user.email) {
+
+            console.log(user)
+
+            const response = await axios.post('https://app.skorozvon.ru/supreme/users/login?locale=ru', {
+                "user" : {
+                    // "email":"achkasovarkady97@yandex.ru",
+                    "email": user.email,
+                    // "password": user.password,
+                    "password": 'qwertyuiop123A',
+                    "ip_address":"e401fd27-748f-4b33-b03c-460454b1e702.local",
+                    "tz_offset":-180,
+                    "continue_token":""
+                }
+            });
+
+            let userToken = response.data.callback_data.headers.authorization
+
+            // console.log(user, userToken)
+
+            let result = await axios.get('https://pod5-shard2-lb1.skorozvon.ru/calls', {
+                headers: { Authorization: userToken },
+                params: {
+                    limit: 100,
+                    'date[from]': dayjs(gte).format('YYYY-MM-DD'),
+                    'date[to]': dayjs(lte).format('YYYY-MM-DD'),
+                    'duration[from]': 1,
+                    type: 'all',
+                    current_type: 'all',
+                    direction: 1,
+                    column: 'start',
+                    page: 1,
+                    offset: 0,
+                }
+            })
+
+            let responseDataByCalls = result.data.data.total
+
+            return responseDataByCalls
+
+        }
+
+    } catch (e) {
+        console.log(e.message)
+    }
+
+}
+
 
 async function getSkorozvonCalls(gte, lte) {
 
@@ -171,4 +223,4 @@ async function getLeadTimeline(transfer) {
     }
 }
 
-module.exports = { getSkorozvonToken, getSkorozvonCalls, getLeadsToOneDay, getLeadTimeline, getLeadAudioUrls }
+module.exports = { getSkorozvonToken, getSkorozvonCalls, getLeadsToOneDay, getLeadTimeline, getLeadAudioUrls, getSkorozvonCallsFromProfile }

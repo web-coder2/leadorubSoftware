@@ -57,6 +57,7 @@ router.get('/api/salary/get', async (req, res) => {
 
             if (resultObject[item.name]) {
                 resultObject[item.name].countCalls += item.countCalls
+                resultObject[item.name].countCalls += item.countCallsWithProfile
                 resultObject[item.name].countLeads += item.countLeads
                 resultObject[item.name].countTargets += item.countTargets
                 resultObject[item.name].countHolds += item.countHolds
@@ -70,6 +71,7 @@ router.get('/api/salary/get', async (req, res) => {
                     name: item.name,
                     email: item.email,
                     countCalls: item.countCalls,
+                    countCallsWithProfile: item.countCallsWithProfile,
                     countLeads: item.countLeads,
                     countTargets: item.countTargets,
                     countHolds: item.countHolds,
@@ -96,10 +98,12 @@ router.get('/api/salary/get', async (req, res) => {
             scriptBonus: 0,
             clear: 0,
             brokerSalary: 0,
+            countCallsWithProfile: 0,
         };
 
         resultObject.forEach(item => {
             total.countCalls += item.countCalls || 0;
+            total.countCallsWithProfile += item.countCallsWithProfile || 0
             total.countLeads += item.countLeads || 0;
             total.countTargets += item.countTargets || 0;
             total.countHolds += item.countHolds || 0;

@@ -22,6 +22,7 @@
         <el-table-column prop="name" label="Имя"></el-table-column>
         <!-- <el-table-column prop="email" label="Логин"></el-table-column> -->
         <el-table-column prop="countCalls" label="Звонки"></el-table-column>
+        <el-table-column v-if="userRole === 'admin'" prop="countCallsWithProfile" label="Звонки из профиля"></el-table-column>
         <el-table-column prop="countLeads" label="Лиды"></el-table-column>
         <el-table-column prop="countTargets" label="Целевые"></el-table-column>
         <el-table-column prop="countHolds" label="Холды"></el-table-column>

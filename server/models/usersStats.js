@@ -5,6 +5,7 @@ const usersStats = new Schema({
     name: String,
     date: String,
     countCalls: Number,
+    countCallsWithProfile: Number,
     countLeads: Number,
     countTargets: Number,
     countHolds: Number,

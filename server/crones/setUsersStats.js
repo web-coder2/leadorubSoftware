@@ -7,7 +7,7 @@ const dotenv = require('dotenv')
 const leadsModel = require('../models/leadsModel.js')
 const usersModel = require('../models/usersModel.js')
 
-const { getSkorozvonCalls } = require('../services/skorozvonService.js')
+const { getSkorozvonCalls, getSkorozvonCallsFromProfile } = require('../services/skorozvonService.js')
 const { getLeadsToDate, aggregateUsersLeads, calculateClearByUser } = require('../services/leadsService.js')
 const { calculateSalaryLeadorub, calculateSalaryHoldorub, calculateBonusToTargetsLeadorub, calculateBonusToClearPrice } = require('../services/salaryService.js')
 const { getAllUsers, getUserIdByName, upserUsersStatsToDB } = require('../services/usersService.js')
@@ -30,11 +30,21 @@ async function setUsersStatsToDB(gte, lte) {
     //         return item.name === user.userName
     //     })
 
+    let allUsersInModel = await usersModel.find()
+
     for (let user of usersCallsWithoutZeroCalls) {
 
         let usersCallsObject = aggregatedUsersLeads.find((item) => {
             return item.userName === user.name
         })
+
+        let userObjectWithModel = allUsersInModel.find((user2) => {
+            return user2.email === user.email
+        })
+
+        if (userObjectWithModel) {
+            user.password = userObjectWithModel.password
+        }
 
         if (usersCallsObject) {
             // user.email = usersCallsObject.email
@@ -51,6 +61,10 @@ async function setUsersStatsToDB(gte, lte) {
             user.sumHold = 0
             user.countTargets = 0
         }
+
+        let userCallsInfoFromProfile = await getSkorozvonCallsFromProfile(gte, lte, user)
+
+        user.countCallsWithProfile = userCallsInfoFromProfile
 
         let fullUserObject = await getUserIdByName(user.userName)
 
@@ -77,8 +91,6 @@ async function setUsersStatsToDB(gte, lte) {
 
         user.scriptBonus = scriptBonus
         user.date = dayjs(gte).format('YYYY-MM-DD')
-
-        console.log(user, '!!!!!!')
 
         const result = await upserUsersStatsToDB(user)
     }
