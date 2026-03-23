@@ -17,8 +17,8 @@
         data() {
             return {
                 title: 'Тестовая вкладка',
-                gte: dayjs(new Date).format('YYYY-MM-DD'),
-                lte: dayjs(new Date).format('YYYY-MM-DD'),
+                gte: dayjs('2026-03-23').format('YYYY-MM-DD'),
+                lte: dayjs('2026-03-23').format('YYYY-MM-DD'),
             }
         },
         methods: {

@@ -175,12 +175,9 @@ router.get('/api/test/diffinity', async (req, res) => {
             }
         })
 
-        // for (let user of usersStatsArrayOfUsers) {
-        //     console.log(user)
-        //     let data = await getDifferenceByCalls(gte, lte, user)
-        // }
-
-        let data = await getDifferenceByCalls(gte, lte, usersStatsArrayOfUsers[0])
+        for (let user of usersStatsArrayOfUsers) {
+            let data = await getDifferenceByCalls(gte, lte, user)
+        }
 
         res.status(200).json({
             data: usersStatsArrayOfUsers
