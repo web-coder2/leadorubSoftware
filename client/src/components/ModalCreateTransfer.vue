@@ -21,12 +21,12 @@
             <el-form-item label="Телефон" prop="phone">
                 <el-input v-model="transferObject.phone"></el-input>
             </el-form-item>
-            <el-form-item label="Клиент" prop="client">
+            <!-- <el-form-item label="Клиент" prop="client">
                 <el-input v-model="transferObject.client"></el-input>
             </el-form-item>
             <el-form-item label="Описание" prop="description">
                 <el-input v-model="transferObject.description"></el-input>
-            </el-form-item>
+            </el-form-item> -->
         </el-form>
 
         <div slot="footer" class="dialog-footer">
@@ -54,8 +54,15 @@
                     date: dayjs().format('YYYY-MM-DD'),
                     userName: this.userName,
                     phone: '',
-                    client: '',
-                    description: ''
+                    // client: '',
+                    // description: ''
+                    broker: '',
+                    price: 0,
+                    residenceStatus: 'created',
+                    statusOKK: false,
+                    selfLead: 'Ручной',
+                    countHold: 0,
+                    isEdited: true,
                 },
                 usersList: [],
             }
@@ -86,9 +93,9 @@
                     this.transferObject.date = dayjs(this.transferObject.date).format('YYYY-MM-DD');
 
                     const response = await this.$store.dispatch('createDataList', {
-                        col: "api/transfers/create",
+                        col: "api/leads/create",
                         data: {
-                            transferObject: this.transferObject
+                            leadObject: this.transferObject
                         }
                     });
 

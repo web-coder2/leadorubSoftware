@@ -57,6 +57,15 @@
                 <el-checkbox v-model="row.isEdited"></el-checkbox>
             </template>
         </el-table-column>
+        <el-table-column :width="140" label="Редактировать">
+            <template #default="{ row }">
+                <el-button circle plain type="danger" @click="openEditModal(row)">
+                    <el-icon>
+                        <Edit />
+                    </el-icon>
+                </el-button>
+            </template>
+        </el-table-column>
     </el-table>
 
     <el-button type="success" @click="saveLeadsData">Сохранить данные</el-button>
@@ -82,12 +91,34 @@
         <strong>чтобы изменения вошли в силу и в будущем програмане перезаписала и не убрала изменения нужно поставить галочку для даного лида в колонке "Проверен"</strong>
     </el-dialog>
 
+
+    <el-dialog title="Редактирование лида" v-model="isEditLeadInfo" width="700px">
+        <el-form :model="isEditedLeadObject" label-width="150px" label-position="left">
+            <el-form-item label="Цена офера" prop="price">
+                <el-input v-model="isEditedLeadObject.price" placeholder="Введите цену"></el-input>
+            </el-form-item>
+    
+            <el-form-item label="Статус резиденции" prop="residenceStatus">
+                <el-select v-model="isEditedLeadObject.residenceStatus" placeholder="Выберите статус">
+                    <el-option v-for="(status, idx) in allStatuses" :key="idx" :label="status" :value="status" />
+                </el-select>
+            </el-form-item>
+    
+            <el-form-item label="Брокер" prop="broker">
+                <el-input v-model="isEditedLeadObject.broker" placeholder="Введите имя брокера"></el-input>
+            </el-form-item>
+
+            <el-button type="success" @click="setChanges">Применить изменении</el-button>
+        </el-form>
+    </el-dialog>
+
+
 </template>
 
 <script>
 
     import { ElButton, ElSlider } from 'element-plus'
-    import { VideoPlay, VideoPause } from '@element-plus/icons-vue'
+    import { VideoPlay, VideoPause, Edit } from '@element-plus/icons-vue'
     import { ElMessage } from 'element-plus';
 
     import FormItemSelect from '../components/FormItemSelect.vue'
@@ -103,6 +134,7 @@
         VideoPlay,
         VideoPause,
         FormItemSelect,
+        Edit
     },
     data() {
         return {
@@ -115,6 +147,9 @@
             progress: 0,
             usersList: null,
             isManualeShow: false,
+            isEditLeadInfo: false,
+            isEditedLeadObject: null,
+            allStatuses: ['hold', 'confirmed', 'refused', 'breaked', 'invalid', 'created'],
         }
     },
     methods: {
@@ -129,6 +164,10 @@
 
             this.tableData = response.leads
         },
+        openEditModal(lead) {
+            this.isEditedLeadObject = lead
+            this.isEditLeadInfo = true
+        },
         async saveLeadsData() {
 
             const response = await this.$store.dispatch('createDataList', {
@@ -142,6 +181,27 @@
                 message: 'Лиды успешно изменены',
                 type: 'success',
             });
+        },
+        async setChanges() {
+            try {
+                const response = await this.$store.dispatch('createDataList', { 
+                    col: 'api/leads/edit',
+                    data: {
+                        editedLead: this.isEditedLeadObject
+                    }
+                 })
+                 ElMessage({
+                    message: 'Лид успешно редактирвоаный',
+                    type: 'success',
+                });
+                this.isEditLeadInfo = false
+            } catch (e) {
+                console.log(e.message)
+                ElMessage({
+                    message: `ошибка ${e.message} (((`,
+                    type: 'error',
+                });
+            }
         },
         async fetchAllUsers() {
             try {

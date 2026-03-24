@@ -81,6 +81,32 @@ router.post('/api/leads/upsert', async (req, res) => {
 
 })
 
+router.post('/api/leads/edit', async (req, res) => {
+    try {
+
+        let { editedLead } = req.body
+
+        const updateData = { ...editedLead }
+        delete updateData._id;
+
+        const result = await leadsModel.findOneAndUpdate(
+            { phone: editedLead.phone, date: editedLead.date },
+            { $set: updateData },
+            { upsert: true, returnDocument: 'after' }
+        );
+
+        res.status(200).json({
+            msg: 'Лид успешно редактированый'
+        })
+
+    } catch (e) {
+        console.log(e.message)
+        res.status(500).json({
+            msg: e.message
+        })
+    }
+})
+
 // сдесь будут добавляся лиды системеные но созданые админом если вдруг не получилось спарсить с скорозвона ебучего
 router.post('/api/leads/create', async (req, res) => {
 
