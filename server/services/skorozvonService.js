@@ -29,15 +29,9 @@ async function getDifferenceByCalls(gte, lte, user) {
 
     // получить данные о звонках от имени админа
     let dataCallsByAdmin = await getSkorozvonCallsByUser(gte, lte, user, user.countCalls)
-    // в этом масиве напрмиер 8 номеров телеофна
 
-    // взять масив звонков от акаунта лидоруба конкретного
+    // получить масив с данными из кобинета ЛД
     let dataCallsByUser = await getSkorozvonCallsFromProfileArray(gte, lte, user)
-    // в этом напрмиер 8 + 3 (всегда ненмого больше)
-
-    // const uniquePhones = dataCallsByUser.filter((phone) => {
-    //     return !dataCallsByAdmin.includes(phone)
-    // });
 
     const adminDatesSet = new Set(dataCallsByAdmin.map(call => call.date));
 
