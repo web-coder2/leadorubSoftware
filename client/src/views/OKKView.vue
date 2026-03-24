@@ -25,11 +25,13 @@
         </el-table-column>
         <el-table-column :width="130" label="Прослушать">
             <template #default="{ row }">
-                <el-button v-for="(audio, index) in row.audioArray" :key="index" circle plain type="warning" @click="playAudio(audio)">
-                    <el-icon>
-                        <VideoPlay></VideoPlay>
-                    </el-icon>
-                </el-button>
+                <div class="buttons-container">
+                    <el-button v-for="(audio, index) in row.audioArray" :key="index"  class="audio-button" circle plain type="primary" @click="playAudio(audio)">
+                        <el-icon>
+                            <VideoPlay></VideoPlay>
+                        </el-icon>
+                    </el-button>
+                </div>
             </template>
         </el-table-column>
         <el-table-column :width="150" label="Установить ОКК">
@@ -59,7 +61,7 @@
         </el-table-column>
         <el-table-column :width="140" label="Редактировать">
             <template #default="{ row }">
-                <el-button circle plain type="danger" @click="openEditModal(row)">
+                <el-button circle plain type="primary" @click="openEditModal(row)">
                     <el-icon>
                         <Edit />
                     </el-icon>
@@ -68,7 +70,7 @@
         </el-table-column>
     </el-table>
 
-    <el-button type="success" @click="saveLeadsData">Сохранить данные</el-button>
+    <el-button type="success" style="margin-top: 30px" @click="saveLeadsData">Сохранить данные</el-button>
 
 
     <div v-if="currentAudioUrl" style="margin-top: 20px; padding: 10px; border: 1px solid #dcdfe6; border-radius: 8px; display: flex; align-items: center; gap: 20px;">
@@ -112,8 +114,23 @@
         </el-form>
     </el-dialog>
 
-
 </template>
+
+
+<style>
+
+.buttons-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+  
+.audio-button {
+    max-width: calc(35% - 10px);
+    height: 30px;
+}
+
+</style>
 
 <script>
 
