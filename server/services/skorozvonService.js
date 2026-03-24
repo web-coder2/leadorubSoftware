@@ -29,23 +29,27 @@ async function getDifferenceByCalls(gte, lte, user) {
 
     // получить данные о звонках от имени админа
     let dataCallsByAdmin = await getSkorozvonCallsByUser(gte, lte, user, user.countCalls)
+    // в этом масиве напрмиер 8 номеров телеофна
 
     // взять масив звонков от акаунта лидоруба конкретного
     let dataCallsByUser = await getSkorozvonCallsFromProfileArray(gte, lte, user)
+    // в этом напрмиер 8 + 3 (всегда ненмого больше)
 
-    console.log('from admin: ', dataCallsByAdmin.length, 'from account: ', dataCallsByUser.length, '!!!!', user.name)
-
-    // let adminAndUsersCalls = dataCallsByAdmin.callsArray
-    // let clearUsersCallsArray = dataCallsByUser.callsArray
-
-    // console.log(gte, lte, user.name, user.email)
-    // console.log('adminAndUsersCalls: ', adminAndUsersCalls.length, 'clearUsersCallsArray: ', clearUsersCallsArray.length)
-
-    // const uniquePhones = clearUsersCallsArray.filter((phone) => {
-    //     !adminAndUsersCalls.includes(phone)
+    // const uniquePhones = dataCallsByUser.filter((phone) => {
+    //     return !dataCallsByAdmin.includes(phone)
     // });
 
-    // console.log(uniquePhones, user)
+    const adminDatesSet = new Set(dataCallsByAdmin.map(call => call.date));
+
+    const uniquePhones = dataCallsByUser.filter(userCall => !adminDatesSet.has(userCall.date));
+
+    // console.log('from admin: ', dataCallsByAdmin.length, 'from account: ', dataCallsByUser.length, '!!!!', user.name, uniquePhones)
+
+    return {
+        userName: user.name,
+        uniquePhones: uniquePhones
+    }
+
 }
 
 async function getSkorozvonCallsFromProfileArray(gte, lte, user) {
@@ -83,14 +87,22 @@ async function getSkorozvonCallsFromProfileArray(gte, lte, user) {
                     direction: 1,
                     column: 'start',
                     page: i,
-                    offset: 0,
+                    offset: i * 100,
+                    // блять ебучий скорозвон назуя вам нужон offset
+                    // когда и так уже есть limit и page ????
+                    // хватит курить план когда пилите свою апи хуету
+                    // я пока увидел что там в offset еще нужно делать запросы прошло много часов (и нервов)
                 }
             })
 
             let data = result.data.data.calls
 
             data.forEach((call) => {
-                userCallsArray.push(call.number.slice(1))
+                // userCallsArray.push(call.number.slice(1))
+                userCallsArray.push({
+                    phone: call.number.slice(1),
+                    date: call.date
+                })
             })
         }
     
@@ -178,7 +190,7 @@ async function getSkorozvonCallsByUser(gte, lte, user, countCalls) {
                 'date[to]': dayjs(lte).format('YYYY-MM-DD'),
                 'duration[from]': 1,
                 type: 'all',
-                offset: 0,
+                offset: i * 100,
                 users: userObject.id,
                 _page: i
             }
@@ -189,12 +201,14 @@ async function getSkorozvonCallsByUser(gte, lte, user, countCalls) {
 
 
         callsData.forEach((call) => {
-            callsArray.push(call.number.slice(1))
+            // callsArray.push(call.number.slice(1))
+            callsArray.push({
+                phone: call.number.slice(1),
+                date: call.date
+            })
         })
 
     }
-   
-    console.log(callsArray[callsArray.length - 1], '123123', callsArray[callsArray.length - 100], callsArray[callsArray.length - 101])
 
     return callsArray
 }

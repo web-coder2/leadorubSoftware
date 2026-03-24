@@ -20,7 +20,7 @@
 <script>
 import { ref, computed, onBeforeMount } from 'vue'
 import { useRoute } from 'vue-router'
-import { User, House, Avatar, Service, Star, View, Money, Check } from '@element-plus/icons-vue'
+import { User, House, Avatar, Service, Star, View, Money, Phone } from '@element-plus/icons-vue'
 
 export default {
   data() {
@@ -85,9 +85,9 @@ export default {
           condition: () => this.rankName === 'admin',
         },
         {
-          label: 'Тест',
-          path: '/test',
-          icon: Check,
+          label: 'Сверка',
+          path: '/phones',
+          icon: Phone,
           condition: () => this.rankName === 'admin'
         }
       ]

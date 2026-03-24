@@ -168,6 +168,8 @@ router.get('/api/test/diffinity', async (req, res) => {
 
         let { gte, lte } = req.query
 
+        let difinityObjectsArray = []
+
         let usersStatsArrayOfUsers = await usersStats.find({
             date: {
                 $gte: gte,
@@ -177,10 +179,13 @@ router.get('/api/test/diffinity', async (req, res) => {
 
         for (let user of usersStatsArrayOfUsers) {
             let data = await getDifferenceByCalls(gte, lte, user)
+
+            difinityObjectsArray.push(data)
+
         }
 
         res.status(200).json({
-            data: usersStatsArrayOfUsers
+            data: difinityObjectsArray
         })
 
     } catch (e) {
