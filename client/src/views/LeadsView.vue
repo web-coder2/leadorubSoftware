@@ -21,6 +21,7 @@
       </div>
 
       <el-button v-if="rankName === 'admin'" style="margin-top: 20px; margin-bottom: 20px" type="success" plain @click="isShowModalCreateLead = true">Создать лид</el-button>
+      <el-button v-if="rankName === 'admin'" style="margin-top: 20px; margin-bottom: 20px" type="success" plain @click="downloadLeads">Выгрузить лиды</el-button>
   
       <!-- Вкладки для выбора таблицы -->
       <el-tabs v-model="activeTab" style="margin-top: 20px" type="border-card" @tab-click="handleTabClick">
@@ -201,7 +202,21 @@
         } else if (tab.name === 'another') {
             this.fetchUsersTrasnfers()
         }
-      }, 
+      },
+      downloadLeads() {
+        const phones = this.leadsTableData.map(item => item.phone).join('\n')
+        const blob = new Blob([phones], { type: 'text/plain' })
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+
+        a.href = url
+        a.download = 'phones.txt'
+        document.body.appendChild(a)
+        a.click()
+
+        document.body.removeChild(a)
+        URL.revokeObjectURL(url)
+      },
       openInfoModalLead(lead) {
         this.isShowLeadObjectToModal = lead
         this.isShowModalLeadInfo = true
