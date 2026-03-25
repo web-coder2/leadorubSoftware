@@ -15,8 +15,8 @@
         </el-select>
 
         <div style="display: flex; gap: 10px; margin-top: 10px;">
-          <el-button @click="fetchLeads(); fetchUsersTrasnfers()" type="info">Применить</el-button>
-          <el-button @click="resetFilters(); fetchUsersTrasnfers()" type="warning">Сбросить</el-button>
+          <el-button @click="fetchLeads()" type="info">Применить</el-button>
+          <el-button @click="resetFilters()" type="warning">Сбросить</el-button>
         </div>
       </div>
 
@@ -63,13 +63,12 @@
           </div>
         </el-tab-pane>
   
-        <!-- <el-tab-pane label="ручные лиды" name="another">
-            <el-table :data="usersTransfersData" style="width: 100%">
+        <el-tab-pane v-if="rankName === 'admin'" label="ручные лиды" name="another">
+            <p style="margin-top: 10px; marign-bottom: 10px">посмотреть те лиды которые создали вручную и удалить дубли или тестовые</p>
+            <el-table :data="handCurrentLeads" style="width: 100%">
                 <el-table-column prop="date" label="Дата"></el-table-column>
                 <el-table-column prop="phone" label="Телефон"></el-table-column>
                 <el-table-column prop="userName" label="Имя"></el-table-column>
-                <el-table-column prop="client" label="Клиент"></el-table-column>
-                <el-table-column prop="description" label="Описание"></el-table-column>
                 <el-table-column prop="broker" label="Брокер"></el-table-column>
                 <el-table-column prop="countHold" label="Кол-во холдов"></el-table-column>
                 <el-table-column v-if="rankName === 'admin'" prop="price" label="Цена"></el-table-column>
@@ -78,10 +77,20 @@
                     <el-badge :value="row.residenceStatus" :type="getTypeOfBadge(row.residenceStatus)"></el-badge>
                   </template>
                 </el-table-column>
-                <el-table-column prop="selfTransfer" label="сам перевел"></el-table-column>
+                <el-table-column prop="selfLeadName" label="сам перевел"></el-table-column>
                 <el-table-column prop="statusOKK" label="ОКК"></el-table-column>
+                <el-table-column label="Действие">
+                  <template #default="{ row }">
+                    <el-button type="danger" plain @click="deleteLead(row)">
+                      <el-icon>
+                        <Delete />
+                      </el-icon>
+                      <span style="margin-left: 5px">Удалить</span>
+                    </el-button>
+                  </template>
+                </el-table-column>
               </el-table>
-        </el-tab-pane> -->
+        </el-tab-pane>
       </el-tabs>
     </div>
 
@@ -152,7 +161,7 @@
 
   import FormItemSelect from '../components/FormItemSelect.vue'
   import { ElMessage } from 'element-plus';
-  import { Plus } from '@element-plus/icons-vue'
+  import { Plus, Delete } from '@element-plus/icons-vue'
 
   
   export default {
@@ -194,13 +203,46 @@
       Pagination,
       FormItemSelect,
       Plus,
+      Delete
+    },
+    computed: {
+      handCurrentLeads() {
+        let onlyHandLeads = this.leadsTableData.filter((lead) => {
+          return lead.selfLeadName === 'Ручной'
+        })
+        return onlyHandLeads
+      }
     },
     methods: {
       handleTabClick(tab) {
         if (tab.name === 'leads') {
             this.fetchLeads()
         } else if (tab.name === 'another') {
-            this.fetchUsersTrasnfers()
+            this.fetchLeads()
+        }
+      },
+      async deleteLead(lead) {
+        try { 
+          let response = await this.$store.dispatch('createDataList', {
+            col: 'api/leads/delete',
+            data: {
+              leadId: lead._id
+            }
+          })
+
+          ElMessage({
+            message: 'Лид успешно Удален',
+            type: 'success',
+          });
+
+          await this.fetchLeads()
+
+        } catch (e) {
+          console.log(e.message)
+          ElMessage({
+            message: `ошибка при удаление лида ${e.message}`,
+            type: 'error',
+          });
         }
       },
       downloadLeads() {
@@ -272,20 +314,6 @@
             type: 'error',
             });
         }
-      },
-      async fetchUsersTrasnfers() {
-
-        const params = {
-            gte: this.gte,
-            lte: this.lte,
-        };
-
-        let response = await this.$store.dispatch('getDataList', {
-            col: 'api/transfers/get',
-            params: params
-        })
-
-        this.usersTransfersData = response.transfers
       },
       async getUsersList() {
         let response = await this.$store.dispatch('getDataList', {
