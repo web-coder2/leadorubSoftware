@@ -130,7 +130,7 @@ router.post('/api/leads/create', async (req, res) => {
             date: leadObject.date,
             broker: leadObject.broker,
             price: leadObject.price,
-            phone: leadObject.phone,
+            phone: leadObject.phone.replace(/\D/g, ''),
             audioArray: leadObject.audioArray,
             residenceStatus: leadObject.residenceStatus,
             statusOKK: leadObject.statusOKK,
