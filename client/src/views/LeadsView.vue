@@ -37,7 +37,7 @@
                 </template>
               </el-table-column>
               <el-table-column prop="commentOKK" label="Коментарий"></el-table-column>
-              <el-table-column v-if="rankName === 'admin'" prop="selfLeadName" label="Сам перевел" />
+              <el-table-column prop="selfLeadName" label="Сам перевел" />
               <el-table-column v-if="rankName === 'admin'" prop="broker" label="Брокер"></el-table-column>
               <el-table-column prop="residenceStatus" label="Статус">
                 <template #default="{ row }">

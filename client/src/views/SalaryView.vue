@@ -16,6 +16,12 @@
         </el-form-item>
     </el-form>
 
+    <div style="margin-top: 30px; margin-bottom: 30px">
+        <!-- easy buttons -->
+        <el-button @click="easyGetSalary('today')">сегодня</el-button>
+        <el-button @click="easyGetSalary('yesterday')">вчера</el-button>
+    </div>
+
     <el-button @click="isShowClearCalculation = true" v-if="userRank === 'admin'">Проверить чистую</el-button>
 
     <el-table :data="salaryTableData" style="width: 100%">
@@ -66,6 +72,19 @@
                     }
                 })
                 this.salaryTableData = response.data
+            },
+            async easyGetSalary(dayMode) {
+
+                if (dayMode === 'today') {
+                    this.gte = dayjs(new Date).format('YYYY-MM-DD')
+                    this.lte = dayjs(new Date).format('YYYY-MM-DD')
+                } else if (dayMode === 'yesterday') {
+                    this.gte = dayjs(new Date).subtract(1, 'day').format('YYYY-MM-DD')
+                    this.lte = dayjs(new Date).subtract(1, 'day').format('YYYY-MM-DD')
+                }
+
+                await this.getSalaryData()
+
             },
             async getUserStats() {
                 this.userObject = this.$store.getters['getUserObject']
