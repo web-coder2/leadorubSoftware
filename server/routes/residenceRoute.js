@@ -19,7 +19,8 @@ router.get('/api/residence/brokersList', async (req, res) => {
 
         let response = await axios.get(`${residenceBaseUrl}users`, {
             params: {
-                _populate: 'rankId'
+                _populate: 'rankId',
+                _limit: 0,
             },
             headers: {
                 'Content-Type' : 'application/json',
