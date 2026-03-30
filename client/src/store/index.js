@@ -6,10 +6,13 @@ const store = createStore({
     apiBaseURL: 'http://localhost:3000/',
     // apiBaseURL: 'http://31.130.151.240:3000/',
     userObject: null,
+    brokersList: [],
   },
   getters: {
     getApiBaseURL: (state) => state.apiBaseURL,
     getUserObject: (state) => state.userObject,
+    // отдать знаечние на фронт в компонент
+    getBrokersList: (state) => state.brokersList,
   },
   mutations: {
     setApiBaseURL(state, url) {
@@ -28,6 +31,10 @@ const store = createStore({
       state.userObject = null
       localStorage.removeItem('userObject')
     },
+    // мутация которая изменяет знаечние в store переменую
+    setBrokersList(state, brokers) {
+      state.brokersList = brokers
+    }
   },
   actions: {
     // GET запрос
@@ -70,8 +77,31 @@ const store = createStore({
         throw error
       }
     },
+    // вызов функции для получения данных
+    async getBrokersList({ commit, state }) {
+      try {
+        
+        const response = await axios.get(`${state.apiBaseURL}api/residence/brokersList`)
+        let brokersList = response.data.brokers
+
+        console.log(response)
+
+        // вызов той самой мутации чтобы в нее передать маисв новое занчение и присвоить его в store 
+        // потом в геттере отдаст
+        commit('setBrokersList', brokersList)
+
+
+      } catch (e) {
+        console.log(e.message)
+      }
+    }
   },
 })
+
+
+// TODO: здесь можно сделат ьчтобы при ините фронтенда приложения в vuex сразу выызвались какие то экшены (и не только)
+
+store.dispatch('getBrokersList')
 
 // Инициализация userObject из localStorage при старте
 const storedUser = localStorage.getItem('userObject')

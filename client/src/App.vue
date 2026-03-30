@@ -84,12 +84,12 @@ export default {
           icon: Star,
           condition: () => this.rankName === 'admin',
         },
-        {
-          label: 'Сверка',
-          path: '/phones',
-          icon: Phone,
-          condition: () => this.rankName === 'admin'
-        }
+        // {
+        //   label: 'Сверка',
+        //   path: '/phones',
+        //   icon: Phone,
+        //   condition: () => this.rankName === 'admin'
+        // }
       ]
     }
   },

@@ -113,7 +113,8 @@
           <el-input v-model="newLeadsObject.date" type="date"></el-input>
         </el-form-item>
         <el-form-item label="Брокер" prop="broker">
-          <el-input v-model="newLeadsObject.broker"></el-input>
+          <!-- <el-input v-model="newLeadsObject.broker"></el-input> -->
+          <FormItemSelect v-if="brokersList.length > 0" v-model="newLeadsObject.broker" labelKey="name" valueKey="name" :options="brokersList" />
         </el-form-item>
         <el-form-item label="Цена офера" prop="price">
           <el-input v-model="newLeadsObject.price" type="number"></el-input>
@@ -211,6 +212,9 @@
           return lead.selfLeadName === 'Ручной'
         })
         return onlyHandLeads
+      },
+      brokersList() {
+        return this.$store.getters['getBrokersList']
       }
     },
     methods: {
@@ -356,7 +360,6 @@
 
       this.userObject = this.$store.getters['getUserObject']
       this.rankName = this.userObject.rankName
-
     }
   }
 </script>

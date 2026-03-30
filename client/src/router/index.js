@@ -42,11 +42,11 @@ const router = createRouter({
       name: "okk",
       component: () => import('../views/OKKView.vue')
     },
-    {
-      path: '/phones',
-      name: "phones",
-      component: () => import('../views/PhonesView.vue')
-    }
+    // {
+    //   path: '/phones',
+    //   name: "phones",
+    //   component: () => import('../views/PhonesView.vue')
+    // }
   ],
 })
 

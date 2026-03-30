@@ -15,6 +15,7 @@ const usersRoute = require('./routes/usersRoute.js')
 const leadsRoute = require('./routes/leadsRoute.js')
 const usersStatsRoute = require('./routes/usersStatsRoute.js')
 const transfersRoute = require('./routes/transfersRoute.js')
+const residenceRoute = require('./routes/residenceRoute.js')
 
 setTransfersCrone()
 setUsersStatsCrone()
@@ -70,6 +71,7 @@ app.use(usersRoute)
 app.use(leadsRoute)
 app.use(usersStatsRoute)
 app.use(transfersRoute)
+app.use(residenceRoute)
 
 
 async function startConnectToDB() {
