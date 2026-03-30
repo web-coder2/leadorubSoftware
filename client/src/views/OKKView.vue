@@ -107,7 +107,8 @@
             </el-form-item>
     
             <el-form-item label="Брокер" prop="broker">
-                <el-input v-model="isEditedLeadObject.broker" placeholder="Введите имя брокера"></el-input>
+                <!-- <el-input v-model="isEditedLeadObject.broker" placeholder="Введите имя брокера"></el-input> -->
+                <FormItemSelect v-if="brokersList.length > 0" v-model="isEditedLeadObject.broker" :options="brokersList" valueKey="name" labelKey="name" />
             </el-form-item>
 
             <el-button type="success" @click="setChanges">Применить изменении</el-button>
@@ -167,6 +168,11 @@
             isEditLeadInfo: false,
             isEditedLeadObject: null,
             allStatuses: ['hold', 'confirmed', 'refused', 'breaked', 'invalid', 'created'],
+        }
+    },
+    computed: {
+        brokersList() {
+            return this.$store.getters['getBrokersList']
         }
     },
     methods: {
@@ -269,15 +275,16 @@
             })
         },
         togglePlay() {
-        const audio = this.$refs.audio
-        if (!audio) return
-        if (this.isPlaying) {
-            audio.pause()
-            this.isPlaying = false
-        } else {
-            audio.play()
-            this.isPlaying = true
-        }
+            const audio = this.$refs.audio
+            if (!audio) return
+            
+            if (this.isPlaying) {
+                audio.pause()
+                this.isPlaying = false
+            } else {
+                audio.play()
+                this.isPlaying = true
+            }
         },
         seek() {
         const audio = this.$refs.audio
