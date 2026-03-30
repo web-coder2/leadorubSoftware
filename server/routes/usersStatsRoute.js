@@ -56,8 +56,9 @@ router.get('/api/salary/get', async (req, res) => {
             let bonusByDate = getBonusByDate(item)
 
             if (resultObject[item.name]) {
-                resultObject[item.name].countCalls += item.countCalls
-                resultObject[item.name].countCalls += item.countCallsWithProfile
+                resultObject[item.name].countCalls += item.countCalls || 0
+                // resultObject[item.name].countCallsWithProfile += item.countCallsWithProfile
+                resultObject[item.name].countCallsWithProfile += 0
                 resultObject[item.name].countLeads += item.countLeads
                 resultObject[item.name].countTargets += item.countTargets
                 resultObject[item.name].countHolds += item.countHolds
@@ -70,8 +71,9 @@ router.get('/api/salary/get', async (req, res) => {
                 resultObject[item.name] = {
                     name: item.name,
                     email: item.email,
-                    countCalls: item.countCalls,
-                    countCallsWithProfile: item.countCallsWithProfile,
+                    countCalls: item.countCalls || 0,
+                    // countCallsWithProfile: item.countCallsWithProfile,
+                    countCallsWithProfile: 0,
                     countLeads: item.countLeads,
                     countTargets: item.countTargets,
                     countHolds: item.countHolds,
