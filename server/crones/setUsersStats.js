@@ -62,10 +62,12 @@ async function setUsersStatsToDB(gte, lte) {
             user.countTargets = 0
         }
 
-        let userCallsInfoFromProfile = await getSkorozvonCallsFromProfile(gte, lte, user)
+        // let userCallsInfoFromProfile = await getSkorozvonCallsFromProfile(gte, lte, user)
 
+        // TODO: если что убираю функцию для получения звонков из личного кобинета
 
-        user.countCallsWithProfile = userCallsInfoFromProfile
+        // user.countCallsWithProfile = userCallsInfoFromProfile
+        user.countCallsWithProfile = 0
 
         let fullUserObject = await getUserIdByName(user.userName)
 
