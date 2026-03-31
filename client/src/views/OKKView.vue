@@ -23,7 +23,7 @@
                 <FormItemSelect v-if="usersList" v-model="row.userName" :options="usersList" />
             </template>
         </el-table-column>
-        <el-table-column :width="130" label="Прослушать">
+        <el-table-column :width="100" label="Запись">
             <template #default="{ row }">
                 <div class="buttons-container">
                     <el-button v-for="(audio, index) in row.audioArray" :key="index"  class="audio-button" circle plain type="primary" @click="playAudio(audio)">
@@ -44,12 +44,12 @@
         </el-table-column>
         <el-table-column prop="selfLeadName" :width="110" label="Сам перевел" />
         <el-table-column prop="broker" :width="140" label="Брокер"></el-table-column>
-        <el-table-column :width="150" prop="commentOKK" label="Коментарий">
+        <!-- <el-table-column :width="150" prop="commentOKK" label="Коментарий">
             <template #default="{ row }">
                 <el-input v-model="row.commentOKK"></el-input>
             </template>
-        </el-table-column>
-        <el-table-column prop="residenceStatus" label="Статус">
+        </el-table-column> -->
+        <el-table-column prop="residenceStatus" :width="100" label="Статус">
             <template #default="{ row }">
                 <el-badge :value="row.residenceStatus" :type="getTypeOfBadge(row.residenceStatus)"></el-badge>
               </template>
@@ -59,7 +59,7 @@
                 <el-checkbox v-model="row.isEdited"></el-checkbox>
             </template>
         </el-table-column>
-        <el-table-column :width="140" label="Редактировать">
+        <el-table-column :width="140" label="Изменить">
             <template #default="{ row }">
                 <el-button circle plain type="primary" @click="openEditModal(row)">
                     <el-icon>
@@ -74,17 +74,13 @@
 
 
     <div v-if="currentAudioUrl" style="margin-top: 20px; padding: 10px; border: 1px solid #dcdfe6; border-radius: 8px; display: flex; align-items: center; gap: 20px;">
-
         <el-button @click="togglePlay" type="primary" icon>
             <el-icon>
                 <component :is="isPlaying ? 'VideoPlay' : 'VideoPause'" />
             </el-icon>
         </el-button>
-        
         <el-slider v-model="progress" :max="duration" @change="seek" style="flex: 1;" tooltip="hover" tooltip-format="{value}s"></el-slider>
-        
         <span>{{ formatTime(currentTime) }} / {{ formatTime(duration) }}</span>
-        
         <audio ref="audio" :src="currentAudioUrl"></audio>
     </div>
 
@@ -111,6 +107,10 @@
                 <FormItemSelect v-if="brokersList.length > 0" v-model="isEditedLeadObject.broker" :options="brokersList" valueKey="name" labelKey="name" />
             </el-form-item>
 
+            <el-form-item label="Комментарий">
+                <el-input v-model="isEditedLeadObject.commentOKK"></el-input>
+            </el-form-item>
+
             <el-button type="success" @click="setChanges">Применить изменении</el-button>
         </el-form>
     </el-dialog>
@@ -127,7 +127,7 @@
 }
   
 .audio-button {
-    max-width: calc(35% - 10px);
+    max-width: 45%;
     height: 30px;
 }
 

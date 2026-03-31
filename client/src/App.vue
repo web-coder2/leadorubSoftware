@@ -1,13 +1,25 @@
 <template>
   <el-container style="height: 100vh;">
-    <el-aside :width="isMobile ? '60px' : '200px'" v-if="showSidebar && !isLoading" style="height: 100vh; background-color: #2d2d2d;">
+    <el-aside :width="isShowMenu ? '200px' : '60px'" v-if="showSidebar && !isLoading" style="height: 100vh; background-color: #2d2d2d;">
       <el-menu default-active="1" background-color="transparent" text-color="#fff" active-text-color="#ffd04b" router style="height: 100%; display: flex; flex-direction: column; justify-content: flex-start;">
         <template v-for="(item, index) in menuItems" :key="index">
-          <el-menu-item v-if="!item.condition || item.condition()" :index="item.path" :to="item.path">
-            <el-icon><component :is="item.icon"></component></el-icon>
-            <span v-if="!isMobile">{{ item.label }}</span>
-          </el-menu-item>
+          
+          <el-tooltip :content="item.label" :disabled="isShowMenu" placement="right">
+            <el-menu-item v-if="!item.condition || item.condition()" :index="item.path" :to="item.path">
+              <el-icon>
+                <component :is="item.icon" />
+              </el-icon>
+              <span v-if="isShowMenu">{{ item.label }}</span>
+            </el-menu-item>
+          </el-tooltip>
+
         </template>
+        <el-button @click="isShowMenu =! isShowMenu" circle class="collapse-btn" v-if="!isMobile">
+          <el-icon>
+            <ArrowDown v-if="isShowMenu"/>
+            <ArrowRight v-if="!isShowMenu"/>
+          </el-icon>
+        </el-button>
       </el-menu>
     </el-aside>
 
@@ -17,10 +29,26 @@
   </el-container>
 </template>
 
+<style>
+
+.collapse-btn {
+  margin-top: auto;
+  margin-bottom: 20px;
+  background-color: rgb(26, 25, 25) !important;
+  width: 30px !important;
+  margin-left: calc(50% - 15px);
+}
+
+.collapse-btn:hover {
+  background-color: rgb(49, 48, 48);
+}
+
+</style>
+
 <script>
 import { ref, computed, onBeforeMount } from 'vue'
 import { useRoute } from 'vue-router'
-import { User, House, Avatar, Service, Star, View, Money, Phone } from '@element-plus/icons-vue'
+import { User, House, Avatar, Service, Star, View, Money, Phone, ArrowRight, ArrowDown } from '@element-plus/icons-vue'
 
 export default {
   data() {
@@ -31,7 +59,12 @@ export default {
       menuItems: [],
       isLoading: true,
       isMobile: true,
+      isShowMenu: false, // переменая для коллапса сайдбара
     }
+  },
+  components: {
+    ArrowDown,
+    ArrowRight
   },
   computed: {
     showSidebar() {
