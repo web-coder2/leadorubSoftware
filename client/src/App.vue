@@ -1,6 +1,6 @@
 <template>
   <el-container style="height: 100vh;">
-    <el-aside :width="isShowMenu ? '200px' : '60px'" v-if="showSidebar && !isLoading" style="height: 100vh; background-color: #2d2d2d;">
+    <el-aside :width="isShowMenu ? fullSidebarWidth : '60px'" v-if="showSidebar && !isLoading" style="height: 100vh; background-color: #2d2d2d;">
       <el-menu default-active="1" background-color="transparent" text-color="#fff" active-text-color="#ffd04b" router style="height: 100%; display: flex; flex-direction: column; justify-content: flex-start;">
         <template v-for="(item, index) in menuItems" :key="index">
           
@@ -14,7 +14,7 @@
           </el-tooltip>
 
         </template>
-        <el-button @click="isShowMenu =! isShowMenu" circle class="collapse-btn" v-if="!isMobile">
+        <el-button @click="isShowMenu =! isShowMenu" circle class="collapse-btn">
           <el-icon>
             <ArrowDown v-if="isShowMenu"/>
             <ArrowRight v-if="!isShowMenu"/>
@@ -69,6 +69,10 @@ export default {
   computed: {
     showSidebar() {
       return this.route.path !== '/login'
+    },
+    // ширина открытого развернутого сайдбара
+    fullSidebarWidth() {
+      return this.isMobile ? '100%' : '200px'
     }
   },
   methods: {
