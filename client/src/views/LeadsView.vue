@@ -41,7 +41,9 @@
               <el-table-column v-if="rankName === 'admin'" prop="broker" label="Брокер"></el-table-column>
               <el-table-column prop="residenceStatus" label="Статус">
                 <template #default="{ row }">
-                  <el-badge :value="row.residenceStatus" :type="getTypeOfBadge(row.residenceStatus)"></el-badge>
+                  <div class="custom" :style="{'background-color' : getTypeOfBadge(row.residenceStatus)}">
+                    {{ row.residenceStatus }}
+                  </div>
                 </template>
               </el-table-column>
               <el-table-column v-if="rankName === 'admin'" prop="price" label="Цена"></el-table-column>
@@ -155,6 +157,23 @@
 
 </template>
   
+
+<style>
+
+.custom {
+    width: 80px;
+    text-align: center;
+    font-size: 14px;
+    text-align: center;
+    color: white;
+    border-radius: 30px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    margin-left: -10px;
+}
+
+</style>
+
 <script>
   import dayjs from 'dayjs'
   import axios from 'axios'
@@ -327,15 +346,21 @@
       },
       getTypeOfBadge(status) {
         let type
+
         if (status === 'hold') {
-          type = 'success'
+          type = 'rgb(44, 157, 44)'
         } else if (status === 'created') {
-          type = 'info'
+          type = 'rgb(158, 158, 158)'
         } else if (status === 'invalid') {
-          type = 'danger'
-        } else if (status === 'breaked') {
-          type = 'primary'
+          type = 'rgb(248, 104, 188)'
+          } else if (status === 'breaked') {
+          type = 'rgb(104, 200, 248)'
+        } else if (status === 'confirmed') {
+          type = 'rgb(253, 191, 76)'
+        } else if (status === 'refused') {
+          type = 'rgb(190, 116, 247)'
         }
+
         return type
       },
       handlePageChange({ page, rowsInPage }) {

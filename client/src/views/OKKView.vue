@@ -51,8 +51,10 @@
         </el-table-column> -->
         <el-table-column prop="residenceStatus" :width="100" label="Статус">
             <template #default="{ row }">
-                <el-badge :value="row.residenceStatus" :type="getTypeOfBadge(row.residenceStatus)"></el-badge>
-              </template>
+                <div class="custom" :style="{ 'background-color' : getTypeOfBadge(row.residenceStatus)}">
+                    {{ row.residenceStatus }}
+                </div>
+            </template>
         </el-table-column>
         <el-table-column :width="100" label="Проверен">
             <template #default="{ row }">
@@ -129,6 +131,18 @@
 .audio-button {
     max-width: 45%;
     height: 30px;
+}
+
+.custom {
+    width: 80px;
+    text-align: center;
+    font-size: 14px;
+    text-align: center;
+    color: white;
+    border-radius: 30px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    margin-left: -10px;
 }
 
 </style>
@@ -241,14 +255,19 @@
             let type
 
             if (status === 'hold') {
-                type = 'success'
+                type = 'rgb(44, 157, 44)'
             } else if (status === 'created') {
-                type = 'info'
+                type = 'rgb(158, 158, 158)'
             } else if (status === 'invalid') {
-                type = 'danger'
+                type = 'rgb(248, 104, 188)'
             } else if (status === 'breaked') {
-                type = 'primary'
+                type = 'rgb(104, 200, 248)'
+            } else if (status === 'confirmed') {
+                type = 'rgb(253, 191, 76)'
+            } else if (status === 'refused') {
+                type = 'rgb(190, 116, 247)'
             }
+
             return type
         },
         playAudio(audioUrl) {
