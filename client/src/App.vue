@@ -1,9 +1,14 @@
 <template>
-  <el-container style="height: 100vh;">
-    <el-aside :width="isShowMenu ? fullSidebarWidth : '60px'" v-if="showSidebar && !isLoading" style="height: 100vh; background-color: #2d2d2d;">
+  <el-container class="main-menu">
+    <el-aside :width="isShowMenu ? fullSidebarWidth : miniSizeSidebar" v-if="showSidebar && !isLoading" style="height: 100vh; background-color: #2d2d2d;">
       <el-menu default-active="1" background-color="transparent" text-color="#fff" active-text-color="#ffd04b" router style="height: 100%; display: flex; flex-direction: column; justify-content: flex-start;">
+
+        <el-menu-item>
+          <img src="https://m-files.cdnvideo.ru/lpfile/1/7/1/17132b3c0df3b9802560ee27788e85d5/-/crop/0x0x640x640/-/resize/94/-/resize/1920/f.png" class="logo" />
+          <span v-if="isShowMenu" style="text-align: center; color: white; margin-left: 10px;">HBA Лидорубы</span>
+        </el-menu-item>
+
         <template v-for="(item, index) in menuItems" :key="index">
-          
           <el-tooltip :content="item.label" :disabled="isShowMenu" placement="right">
             <el-menu-item v-if="!item.condition || item.condition()" :index="item.path" :to="item.path">
               <el-icon>
@@ -12,18 +17,13 @@
               <span v-if="isShowMenu">{{ item.label }}</span>
             </el-menu-item>
           </el-tooltip>
-
         </template>
-        <el-button @click="isShowMenu =! isShowMenu" circle class="collapse-btn">
-          <el-icon>
-            <ArrowDown v-if="isShowMenu"/>
-            <ArrowRight v-if="!isShowMenu"/>
-          </el-icon>
-        </el-button>
+
       </el-menu>
     </el-aside>
 
     <el-main style="height: 100%;">
+      <AppHeader v-if="showSidebar" :userName="userName" :onClickMenu="collapse" />
       <router-view></router-view>
     </el-main>
   </el-container>
@@ -43,17 +43,31 @@
   background-color: rgb(49, 48, 48);
 }
 
+.main-menu {
+  height: 100vh; 
+  display: flex;
+  align-items: start;
+}
+
+.logo {
+  width: 30px;
+  height: 30px;
+  text-align: center;
+}
+
 </style>
 
 <script>
 import { ref, computed, onBeforeMount } from 'vue'
 import { useRoute } from 'vue-router'
-import { User, House, Avatar, Service, Star, View, Money, Phone, ArrowRight, ArrowDown } from '@element-plus/icons-vue'
+import { User, House, Avatar, Service, Star, View, Money, Phone, ArrowRight, ArrowDown, Menu } from '@element-plus/icons-vue'
+import AppHeader from './components/AppHeader.vue'
 
 export default {
   data() {
     return {
       userObject: null,
+      userName: '',
       rankName: '',
       route: null,
       menuItems: [],
@@ -64,7 +78,10 @@ export default {
   },
   components: {
     ArrowDown,
-    ArrowRight
+    ArrowRight,
+    Menu,
+    User,
+    AppHeader
   },
   computed: {
     showSidebar() {
@@ -73,6 +90,10 @@ export default {
     // ширина открытого развернутого сайдбара
     fullSidebarWidth() {
       return this.isMobile ? '100%' : '200px'
+    },
+    // ширина свернутого меню (мини версия для мобилки : десктоп)
+    miniSizeSidebar() {
+      return this.isMobile ? '0px' : '60px'
     }
   },
   methods: {
@@ -128,12 +149,16 @@ export default {
         //   condition: () => this.rankName === 'admin'
         // }
       ]
+    },
+    collapse() {
+      this.isShowMenu =! this.isShowMenu
     }
   },
   async beforeMount() {
     this.route = this.$router.currentRoute
     this.userObject = this.$store.getters['getUserObject']
     this.rankName = this.userObject.rankName
+    this.userName = this.userObject.name
     this.initializeMenu()
     console.log(this.userObject)
     this.isLoading = false
