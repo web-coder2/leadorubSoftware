@@ -26,11 +26,12 @@
         <el-table-column :width="100" label="Запись">
             <template #default="{ row }">
                 <div class="buttons-container">
-                    <el-button v-for="(audio, index) in row.audioArray" :key="index"  class="audio-button" circle plain type="primary" @click="playAudio(audio)">
+                    <el-button v-for="(audio, index) in row.audioArray.slice(0, 1)" :key="index"  class="audio-button" circle plain type="primary" @click="playAudio(audio)">
                         <el-icon>
                             <VideoPlay></VideoPlay>
                         </el-icon>
                     </el-button>
+                    <el-button circle type="warning" plain @click="openAllAudio(row)">{{ row.audioArray.length }}</el-button>
                 </div>
             </template>
         </el-table-column>
@@ -42,6 +43,16 @@
               </el-select>
             </template>
         </el-table-column>
+        
+        <el-table-column :width="100" label="Коммент">
+            <template #default="{ row }">
+                <el-button @click="openModalToComment(row)">+</el-button>
+                <el-tooltip popper-class="comment-tooltip" v-if="row.commentOKK" :width="100" effect="light" :content="row.commentOKK" placement="top">
+                    ...
+                </el-tooltip>
+            </template>
+        </el-table-column>
+
         <el-table-column prop="selfLeadName" :width="110" label="Сам перевел" />
         <el-table-column prop="broker" :width="140" label="Брокер"></el-table-column>
         <!-- <el-table-column :width="150" prop="commentOKK" label="Коментарий">
@@ -75,7 +86,7 @@
     <el-button type="success" style="margin-top: 30px" @click="saveLeadsData">Сохранить данные</el-button>
 
 
-    <div v-if="currentAudioUrl" style="margin-top: 20px; padding: 10px; border: 1px solid #dcdfe6; border-radius: 8px; display: flex; align-items: center; gap: 20px;">
+    <div v-if="currentAudioUrl && !showModalToAudio" style="margin-top: 20px; padding: 10px; border: 1px solid #dcdfe6; border-radius: 8px; display: flex; align-items: center; gap: 20px;">
         <el-button @click="togglePlay" type="primary" icon>
             <el-icon>
                 <component :is="isPlaying ? 'VideoPlay' : 'VideoPause'" />
@@ -92,6 +103,44 @@
     </el-dialog>
 
 
+    <el-dialog title="Прослушать все аудио" v-model="showModalToAudio" width="700px">
+        
+        <div style="display: flex; flex-direction: column;">
+            <div v-for="(audio, index) in allLeadAudioArray" style="display: flex; align-items: center">
+                <p>Запись номер {{ index }}</p>
+                <el-button style="margin-left: 20px;" :key="index"  class="audio-button" type="success" @click="playAudio(audio)">
+                    <el-icon>
+                        <VideoPlay></VideoPlay>
+                    </el-icon>
+                </el-button>
+            </div>
+        </div>
+
+        <div v-if="currentAudioUrl" style="margin-top: 20px; padding: 10px; border: 1px solid #dcdfe6; border-radius: 8px; display: flex; align-items: center; gap: 20px;">
+            <el-button @click="togglePlay" type="primary" icon>
+                <el-icon>
+                    <component :is="isPlaying ? 'VideoPlay' : 'VideoPause'" />
+                </el-icon>
+            </el-button>
+            <el-slider v-model="progress" :max="duration" @change="seek" style="flex: 1;" tooltip="hover" tooltip-format="{value}s"></el-slider>
+            <span>{{ formatTime(currentTime) }} / {{ formatTime(duration) }}</span>
+            <audio ref="audio" :src="currentAudioUrl"></audio>
+        </div>
+
+    </el-dialog>
+
+    <el-dialog title="Изменение коментария" v-model="showModalToComment" width="700px">
+        <el-form :model="isEditedLeadObject" label-width="150px" label-position="left">
+
+            <el-form-item label="Комментарий">
+                <el-input v-model="isEditedLeadObject.commentOKK"></el-input>
+            </el-form-item>
+
+            <el-button type="success" @click="setChanges">Оставить коментарий</el-button>
+            <el-button type="danger" @click="isEditedLeadObject.commentOKK = '';setChanges()">Удалить коментарий</el-button>
+        </el-form>
+    </el-dialog>
+
     <el-dialog title="Редактирование лида" v-model="isEditLeadInfo" width="700px">
         <el-form :model="isEditedLeadObject" label-width="150px" label-position="left">
             <el-form-item label="Цена офера" prop="price">
@@ -107,10 +156,6 @@
             <el-form-item label="Брокер" prop="broker">
                 <!-- <el-input v-model="isEditedLeadObject.broker" placeholder="Введите имя брокера"></el-input> -->
                 <FormItemSelect v-if="brokersList.length > 0" v-model="isEditedLeadObject.broker" :options="brokersList" valueKey="name" labelKey="name" />
-            </el-form-item>
-
-            <el-form-item label="Комментарий">
-                <el-input v-model="isEditedLeadObject.commentOKK"></el-input>
             </el-form-item>
 
             <el-button type="success" @click="setChanges">Применить изменении</el-button>
@@ -143,6 +188,10 @@
     padding-top: 3px;
     padding-bottom: 3px;
     margin-left: -10px;
+}
+
+.comment-tooltip {
+    width: 400px;
 }
 
 </style>
@@ -182,6 +231,9 @@
             isEditLeadInfo: false,
             isEditedLeadObject: null,
             allStatuses: ['hold', 'confirmed', 'refused', 'breaked', 'invalid', 'created'],
+            showModalToComment: false,
+            allLeadAudioArray: null,
+            showModalToAudio: false
         }
     },
     computed: {
@@ -201,9 +253,17 @@
 
             this.tableData = response.leads
         },
+        openAllAudio(lead) {
+            this.allLeadAudioArray = lead.audioArray
+            this.showModalToAudio = true
+        },
         openEditModal(lead) {
             this.isEditedLeadObject = lead
             this.isEditLeadInfo = true
+        },
+        openModalToComment(lead) {
+            this.isEditedLeadObject = lead
+            this.showModalToComment = true
         },
         async saveLeadsData() {
 
@@ -232,6 +292,7 @@
                     type: 'success',
                 });
                 this.isEditLeadInfo = false
+                this.showModalToComment = false
             } catch (e) {
                 console.log(e.message)
                 ElMessage({

@@ -1,11 +1,21 @@
 <template>
   <el-container class="main-menu">
-    <el-aside :width="isShowMenu ? fullSidebarWidth : miniSizeSidebar" v-if="showSidebar && !isLoading" style="height: 100vh; background-color: #2d2d2d;">
+    <el-aside :width="isShowMenu ? fullSidebarWidth : miniSizeSidebar" v-if="showSidebar && !isLoading" style="height: 100%; background-color: #2d2d2d;">
       <el-menu default-active="1" background-color="transparent" text-color="#fff" active-text-color="#ffd04b" router style="height: 100%; display: flex; flex-direction: column; justify-content: flex-start;">
 
-        <el-menu-item>
-          <img src="https://m-files.cdnvideo.ru/lpfile/1/7/1/17132b3c0df3b9802560ee27788e85d5/-/crop/0x0x640x640/-/resize/94/-/resize/1920/f.png" class="logo" />
-          <span v-if="isShowMenu" style="text-align: center; color: white; margin-left: 10px;">HBA Лидорубы</span>
+        <el-menu-item style="display: flex; justify-content: space-between;">
+
+          <div style="display: flex; align-items: center;">
+            <img src="https://m-files.cdnvideo.ru/lpfile/1/7/1/17132b3c0df3b9802560ee27788e85d5/-/crop/0x0x640x640/-/resize/94/-/resize/1920/f.png" class="logo" />
+            <span v-if="isShowMenu" style="text-align: center; color: white; margin-left: 10px;">HBA Лидорубы</span>
+          </div>
+
+          <el-button v-if="isShowMenu && isMobile" @click="isShowMenu =! isShowMenu" type="warning" circle>
+            <el-icon>
+              <ArrowDown />
+            </el-icon>
+          </el-button>
+
         </el-menu-item>
 
         <template v-for="(item, index) in menuItems" :key="index">
@@ -22,8 +32,8 @@
       </el-menu>
     </el-aside>
 
-    <el-main style="height: 100%;">
-      <AppHeader v-if="showSidebar" :userName="userName" :onClickMenu="collapse" />
+    <el-main style="height: 100%;" v-if="showNotMobileFull">
+      <AppHeader v-if="showSidebar" :userRole="rankName" :userName="userName" :onClickMenu="collapse" />
       <router-view></router-view>
     </el-main>
   </el-container>
@@ -94,6 +104,13 @@ export default {
     // ширина свернутого меню (мини версия для мобилки : десктоп)
     miniSizeSidebar() {
       return this.isMobile ? '0px' : '60px'
+    },
+    showNotMobileFull() {
+      let isShow = true
+      if (this.isMobile === true) {
+        isShow = this.isShowMenu ? false : true
+      }
+      return isShow
     }
   },
   methods: {
