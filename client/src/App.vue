@@ -117,18 +117,6 @@ export default {
     initializeMenu() {
       this.menuItems = [
         {
-          label: 'Выйти',
-          path: '/login',
-          icon: Avatar,
-          condition: null,
-        },
-        {
-          label: 'Профиль',
-          path: '/profile',
-          icon: User,
-          condition: null,
-        },
-        {
           label: 'Главная',
           path: '/',
           icon: House,

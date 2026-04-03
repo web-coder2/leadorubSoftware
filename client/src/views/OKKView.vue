@@ -85,14 +85,17 @@
 
     <el-button type="success" style="margin-top: 30px" @click="saveLeadsData">Сохранить данные</el-button>
 
+    <div v-if="isAudioLoading && !showModalToAudio">
+        <p>Идет загрузка Аудио</p>
+    </div>
 
     <div v-if="currentAudioUrl && !showModalToAudio" style="margin-top: 20px; padding: 10px; border: 1px solid #dcdfe6; border-radius: 8px; display: flex; align-items: center; gap: 20px;">
-        <el-button @click="togglePlay" type="primary" icon>
+        <el-button :disabled="isAudioLoading" @click="togglePlay" type="primary" icon>
             <el-icon>
                 <component :is="isPlaying ? 'VideoPlay' : 'VideoPause'" />
             </el-icon>
         </el-button>
-        <el-slider v-model="progress" :max="duration" @change="seek" style="flex: 1;" tooltip="hover" tooltip-format="{value}s"></el-slider>
+        <el-slider :disabled="isAudioLoading" v-model="progress" :max="duration" @change="seek" style="flex: 1;" tooltip="hover" tooltip-format="{value}s"></el-slider>
         <span>{{ formatTime(currentTime) }} / {{ formatTime(duration) }}</span>
         <audio ref="audio" :src="currentAudioUrl"></audio>
     </div>
@@ -116,13 +119,17 @@
             </div>
         </div>
 
+        <div v-if="isAudioLoading && showModalToAudio">
+            <p>Идет загрузка Аудио</p>
+        </div>
+
         <div v-if="currentAudioUrl" style="margin-top: 20px; padding: 10px; border: 1px solid #dcdfe6; border-radius: 8px; display: flex; align-items: center; gap: 20px;">
-            <el-button @click="togglePlay" type="primary" icon>
+            <el-button :disabled="isAudioLoading" @click="togglePlay" type="primary" icon>
                 <el-icon>
                     <component :is="isPlaying ? 'VideoPlay' : 'VideoPause'" />
                 </el-icon>
             </el-button>
-            <el-slider v-model="progress" :max="duration" @change="seek" style="flex: 1;" tooltip="hover" tooltip-format="{value}s"></el-slider>
+            <el-slider :disabled="isAudioLoading" v-model="progress" :max="duration" @change="seek" style="flex: 1;" tooltip="hover" tooltip-format="{value}s"></el-slider>
             <span>{{ formatTime(currentTime) }} / {{ formatTime(duration) }}</span>
             <audio ref="audio" :src="currentAudioUrl"></audio>
         </div>
@@ -233,7 +240,8 @@
             allStatuses: ['hold', 'confirmed', 'refused', 'breaked', 'invalid', 'created'],
             showModalToComment: false,
             allLeadAudioArray: null,
-            showModalToAudio: false
+            showModalToAudio: false,
+            isAudioLoading: false,
         }
     },
     computed: {
@@ -331,26 +339,41 @@
 
             return type
         },
-        playAudio(audioUrl) {
+        async playAudio(audioUrl) {
             this.currentAudioUrl = audioUrl
+            this.isAudioLoading = true
+            this.currentTime = 0
+            this.progress = 0
+            this.duration = 0
+            this.isPlaying = false
 
-            console.log(this.currentAudioUrl)
+            const loadAudio = (audio) => {
+                return new Promise((resolve) => {
+                    audio.onloadedmetadata = () => {
+                        this.duration = audio.duration
+                        this.isAudioLoading = false
+                        resolve()
+                    }
+                })
+            }
 
-            this.$nextTick(() => {
+            this.$nextTick(async () => {
                 const audio = this.$refs.audio
+                audio.src = this.currentAudioUrl
                 audio.load()
-                audio.play()
+
+                await loadAudio(audio)
+
+                await audio.play()
                 this.isPlaying = true
 
                 audio.ontimeupdate = () => {
-                this.currentTime = audio.currentTime
-                this.progress = audio.currentTime
+                    this.currentTime = audio.currentTime
+                    this.progress = audio.currentTime
                 }
-                audio.onloadedmetadata = () => {
-                this.duration = audio.duration
-                }
+
                 audio.onended = () => {
-                this.isPlaying = false
+                    this.isPlaying = false
                 }
             })
         },
