@@ -3,7 +3,7 @@
       <p style="font-size: 18px; font-weight: bold;">Статистика по лидам Личный кабинет {{ userName }}</p>
   
       <el-row :gutter="20" style="margin-top: 30px;">
-        <el-col :span="8" v-for="(date, index) in leadsWeekData" :key="index">
+        <el-col :span="countSpan" v-for="(date, index) in leadsWeekData" :key="index">
           <el-card shadow="hover">
             <div>
               <p style="margin-bottom: 8px;">Дата: <strong>{{ index }} {{ getDayOfWeek(index) }}</strong></p>
@@ -29,7 +29,8 @@
         data() {
             return {
                 leadsWeekData: [],
-                allLeadsInWeek: 0
+                allLeadsInWeek: 0,
+                isMobile: false,
             }
         },
         props: {
@@ -37,6 +38,11 @@
                 type: String,
                 required: true,
                 default: 'admin'
+            }
+        },
+        computed: {
+            countSpan() {
+                return this.isMobile ? 24 : 8
             }
         },
         methods: {
@@ -62,6 +68,9 @@
             }
         },
         async beforeMount() {
+
+            this.isMobile = window.innerWidth > 480 ? false : true
+
             await this.getLeadIntensity()
         }
     }

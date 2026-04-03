@@ -28,26 +28,26 @@
         <el-tab-pane label="Системные лиды" name="leads">
           <div class="table-data">
             <el-table :data="currentData" style="width: 100%">
-              <el-table-column prop="date" label="Дата"></el-table-column>
-              <el-table-column prop="phone" label="Телефон"></el-table-column>
-              <el-table-column prop="userName" label="Имя"></el-table-column>
-              <el-table-column prop="statusOKK" label="Статус ОКК">
+              <el-table-column :width="100" prop="date" label="Дата"></el-table-column>
+              <el-table-column :width="110" prop="phone" label="Телефон"></el-table-column>
+              <el-table-column :width="160" prop="userName" label="Имя"></el-table-column>
+              <el-table-column :width="110" prop="statusOKK" label="Статус ОКК">
                 <template #default="{ row }">
                   <p>{{ row.statusOKK ? 'Целевой' : 'Нецелевой' }}</p>
                 </template>
               </el-table-column>
-              <el-table-column prop="commentOKK" label="Коментарий"></el-table-column>
-              <el-table-column prop="selfLeadName" label="Сам перевел" />
-              <el-table-column v-if="rankName === 'admin'" prop="broker" label="Брокер"></el-table-column>
-              <el-table-column prop="residenceStatus" label="Статус">
+              <el-table-column :width="160" prop="commentOKK" label="Коментарий"></el-table-column>
+              <el-table-column :width="160" prop="selfLeadName" label="Сам перевел" />
+              <el-table-column :width="160" v-if="rankName === 'admin'" prop="broker" label="Брокер"></el-table-column>
+              <el-table-column :width="160" prop="residenceStatus" label="Статус">
                 <template #default="{ row }">
                   <div class="custom" :style="{'background-color' : getTypeOfBadge(row.residenceStatus)}">
                     {{ row.residenceStatus }}
                   </div>
                 </template>
               </el-table-column>
-              <el-table-column v-if="rankName === 'admin'" prop="price" label="Цена"></el-table-column>
-              <el-table-column v-if="rankName === 'admin'" prop="countHold" label="Кол-во холдов">
+              <el-table-column :width="160" v-if="rankName === 'admin'" prop="price" label="Цена"></el-table-column>
+              <el-table-column :width="160" v-if="rankName === 'admin'" prop="countHold" label="Кол-во холдов">
                 <template #default="{ row }">
                     <div style="display: flex; align-items: center">
                       <p>{{ row.countHold }}</p>

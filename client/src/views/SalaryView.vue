@@ -25,22 +25,22 @@
     <el-button @click="isShowClearCalculation = true" v-if="userRank === 'admin'">Проверить чистую</el-button>
 
     <el-table :data="salaryTableData" style="width: 100%">
-        <el-table-column prop="name" label="Имя"></el-table-column>
+        <el-table-column :width="100" prop="name" label="Имя"></el-table-column>
         <!-- <el-table-column prop="email" label="Логин"></el-table-column> -->
-        <el-table-column prop="countCalls" label="Звонки"></el-table-column>
-        <el-table-column v-if="userRole === 'admin'" prop="countCallsWithProfile" label="Звонки из профиля"></el-table-column>
-        <el-table-column prop="countLeads" label="Лиды"></el-table-column>
-        <el-table-column prop="countTargets" label="Целевые"></el-table-column>
-        <el-table-column prop="countHolds" label="Холды"></el-table-column>
-        <el-table-column v-if="userRole === 'admin'" prop="sumHold" label="Сумма холдов"></el-table-column>
-        <el-table-column prop="salary" label="Зарплата"></el-table-column>
-        <el-table-column prop="scriptBonus" label="Бонус"></el-table-column>
-        <el-table-column prop="salary + scriptBonus" label="Итого ЗП">
+        <el-table-column :width="100" prop="countCalls" label="Звонки"></el-table-column>
+        <el-table-column :width="100" v-if="userRole === 'admin'" prop="countCallsWithProfile" label="Звонки из профиля"></el-table-column>
+        <el-table-column :width="100" prop="countLeads" label="Лиды"></el-table-column>
+        <el-table-column :width="100" prop="countTargets" label="Целевые"></el-table-column>
+        <el-table-column :width="100" prop="countHolds" label="Холды"></el-table-column>
+        <el-table-column :width="100" v-if="userRole === 'admin'" prop="sumHold" label="Сумма холдов"></el-table-column>
+        <el-table-column :width="100" prop="salary" label="Зарплата"></el-table-column>
+        <el-table-column :width="100" prop="scriptBonus" label="Бонус"></el-table-column>
+        <el-table-column :width="100" prop="salary + scriptBonus" label="Итого ЗП">
             <template #default="{ row }">
                 <p>{{ row.salary + row.scriptBonus }}</p>
             </template>
         </el-table-column>
-        <el-table-column prop="clear" label="Чистая"></el-table-column>
+        <el-table-column :width="100" prop="clear" label="Чистая"></el-table-column>
         <!-- <el-table-column prop="brokerSalary" label="ЗП брокерам"></el-table-column> -->
     </el-table>
     
