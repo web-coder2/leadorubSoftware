@@ -25,7 +25,22 @@
     <el-button @click="isShowClearCalculation = true" v-if="userRank === 'admin'">Проверить чистую</el-button>
 
     <el-table :data="salaryTableData" style="width: 100%">
-        <el-table-column :width="100" prop="name" label="Имя"></el-table-column>
+        <el-table-column :width="userColumnWidth" fixed="left"  prop="name" label="Имя">
+            <template #header>
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <span>Имя</span>
+                    <el-button v-if="isMobile" size="mini" circle @click="toggleWidthColumn">
+                        <el-icon>
+                            <ArrowRight v-if="showFullUserCol === true" />
+                            <ArrowDown v-if="showFullUserCol === false" />
+                        </el-icon>
+                    </el-button>
+                </div>
+            </template>
+            <template #default="{ row }">
+                <span class="header-ellipsis">{{ row.name }}</span>
+            </template>
+        </el-table-column>
         <!-- <el-table-column prop="email" label="Логин"></el-table-column> -->
         <el-table-column :width="100" prop="countCalls" label="Звонки"></el-table-column>
         <el-table-column :width="100" v-if="userRole === 'admin'" prop="countCallsWithProfile" label="Звонки из профиля"></el-table-column>
@@ -46,11 +61,22 @@
     
 </template>
 
+<style>
+
+.header-ellipsis {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+</style>
 
 <script>
 
     import dayjs from 'dayjs'
     import axios from 'axios'
+
+    import { ArrowRight, ArrowDown } from '@element-plus/icons-vue'
 
     export default {
         data() {
@@ -60,7 +86,14 @@
                 lte: dayjs(new Date).format('YYYY-MM-DD'),
                 userObject: null,
                 userRole: null,
+                showFullUserCol: true,
+                isMobile: false,
+                userColumnWidth: 150,
             }
+        },
+        components: {
+            ArrowRight,
+            ArrowDown
         },
         methods: {
             async getSalaryData() {
@@ -72,6 +105,16 @@
                     }
                 })
                 this.salaryTableData = response.data
+            },
+            toggleWidthColumn() {
+                this.showFullUserCol =! this.showFullUserCol
+
+                if (this.isMobile === false) {
+                    this.userColumnWidth = 150
+                } else if (this.isMobile === true) {
+                    this.userColumnWidth = this.showFullUserCol ? 150 : 100
+                }
+
             },
             async easyGetSalary(dayMode) {
 
@@ -92,6 +135,9 @@
             }
         },
         async beforeMount() {
+
+            this.isMobile = window.innerWidth > 480 ? false : true
+
             await this.getSalaryData()
             await this.getUserStats()
         }

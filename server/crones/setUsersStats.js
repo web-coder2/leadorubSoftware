@@ -108,6 +108,7 @@ function setUsersStatsCrone() {
     const cronMinute = '*/15 * * * *'
     const cronExpression = '*/5 * * * *'
 
+    // setUsersStatsToDB(new Date('2026-04-03'), new Date('2026-04-03'))
     setUsersStatsToDB(new Date(), new Date())
   
     crone.schedule(cronExpression, () => {
