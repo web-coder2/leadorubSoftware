@@ -6,9 +6,32 @@ const dotenv = require('dotenv')
 const { Router } = require('express');
 
 const usersStatsModel = require('../models/usersStats.js')
+const { setUsersStatsToDB } = require('../crones/setUsersStats.js')
 
 
 const router = Router()
+
+
+router.get('/api/salary/updateInfo', async (req, res) => {
+
+    try {
+
+        const { gte } = req.query
+
+        let resultByUpdateStats = await setUsersStatsToDB(gte, gte)
+
+        res.status(200).json({
+            msg: `статистика юзера успешно обновлена за ${dayjs(gte).format('YYYY-MM-DD')}`
+        })
+
+    } catch (e) {
+        console.log(e.message)
+        res.status(500).json({
+            msg: e.message
+        })
+    }
+
+})
 
 
 router.get('/api/salary/get', async (req, res) => {

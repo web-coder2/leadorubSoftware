@@ -100,6 +100,7 @@ async function setUsersStatsToDB(gte, lte) {
 
     console.log(`Обновление статисткиа юзеров завершилось в БД в ${dayjs(gte).format('YYYY-MM-DD')}`)
 
+    return true
 }
 
 
@@ -116,4 +117,4 @@ function setUsersStatsCrone() {
     })
   }
 
-module.exports = { setUsersStatsCrone }
+module.exports = { setUsersStatsCrone, setUsersStatsToDB }

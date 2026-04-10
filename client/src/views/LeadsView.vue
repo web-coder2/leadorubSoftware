@@ -29,7 +29,7 @@
           <div class="table-data">
             <el-table :data="currentData" style="width: 100%">
               <el-table-column :width="100" prop="date" label="Дата"></el-table-column>
-              <el-table-column :width="110" prop="phone" label="Телефон"></el-table-column>
+              <el-table-column fixed="left" :width="110" prop="phone" label="Телефон"></el-table-column>
               <el-table-column :width="160" prop="userName" label="Имя"></el-table-column>
               <el-table-column :width="110" prop="statusOKK" label="Статус ОКК">
                 <template #default="{ row }">
