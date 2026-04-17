@@ -14,6 +14,9 @@
 
     <el-button style="margin-bottom: 10px" plain type="warning" @click="isManualeShow = true">Открыть памятку</el-button>
 
+    <p style="marign-top: 20px; margin-bottom: 20px;">Теперь если обновить значение статуса ОКК в прошлых датах то будет авто обновление зарплатной</p>
+    <p style="color: gray; margin-bottom: 20px;">на получение ответа с сервера уйдет дольше времени !!!</p>
+
     <el-table :data="tableData" style="width: 100%">
         <el-table-column :width="100" prop="date" label="Дата"></el-table-column>
         <el-table-column :width="120" prop="phone" label="Телефон"></el-table-column>
@@ -278,7 +281,8 @@
             const response = await this.$store.dispatch('createDataList', {
                 col: "api/leads/upsert",
                 data: {
-                    leadsData: this.tableData
+                    leadsData: this.tableData,
+                    date: this.gte
                 }
             })
 

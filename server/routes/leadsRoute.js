@@ -11,6 +11,7 @@ const usersStats = require('../models/usersStats.js')
 const { getLeadsToDate, aggregateUsersLeads, calculateClearByUser, getLeadsByUser } = require('../services/leadsService.js')
 const { getDifferenceByCalls } = require('../services/skorozvonService.js')
 const { getUserIdByName } = require('../services/usersService')
+const { setUsersStatsToDB } = require('../crones/setUsersStats.js')
 
 const router = Router()
 
@@ -55,7 +56,7 @@ router.get('/api/leads/get', async (req, res) => {
 
 router.post('/api/leads/upsert', async (req, res) => {
     try {
-        const { leadsData } = req.body
+        const { leadsData, date } = req.body
 
         for (let lead of leadsData) {
             
@@ -67,6 +68,17 @@ router.post('/api/leads/upsert', async (req, res) => {
                 { $set: updateData },
                 { upsert: true, returnDocument: 'after' }
             );
+        }
+
+        let formatDate = dayjs(date).format('YYYY-MM-DD')
+        let formatNowDate = dayjs(new Date).format('YYYY-MM-DD')
+
+        if (formatDate < formatNowDate) {
+            console.log('не сегодняшняя дата', formatNowDate, '!!!!!!')
+
+            let updateStatsSalary = await setUsersStatsToDB(formatDate, formatDate)
+        } else {
+            console.log('запрос измеения маисва лидов сегодня !!!!!!!')
         }
 
         res.status(200).json({
