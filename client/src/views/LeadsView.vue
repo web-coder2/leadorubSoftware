@@ -98,14 +98,65 @@
 
     <el-dialog title="Информация о системном лиде" v-model="isShowModalLeadInfo" width="700px">
       <h3 style="margin-bottom: 15px;">С этого лида была переведено:</h3>
-      <ul style="list-style: none; padding: 0;">
-        <li v-for="(item, index) in isShowLeadObjectToModal.offersList" :key="index" style="padding: 10px; margin-bottom: 8px; background-color: #f5f5f5; border-radius: 4px; display: flex; flex-direction: column;">
-          <span><strong>Оффер</strong> {{ item.offerName }}</span>
-          <span><strong>Цена</strong> {{ item.price }}</span>
-          <span><strong>Бркоер</strong> {{ item.broker }}</span>
-          <span><strong>Статус</strong> {{ item.status }}</span>
-        </li>
-      </ul>
+      <el-switch v-model="isLeadOffersEdit" active-text="редактировать" inactive-text="прочитать"></el-switch>
+    
+      <div style="margin-top: 20px;">
+
+        <!-- прочитать инфу о оферах лида -->
+        <ul v-if="!isLeadOffersEdit && !leadUpdatedLoading" style="list-style: none; padding: 0;">
+          <li v-for="(item, index) in isShowLeadObjectToModal.offersList" :key="index" style="margin-bottom: 12px;">
+            <el-card shadow="hover" style="background-color: #f5f5f5; border-radius: 8px; padding: 12px;">
+              <p><strong>Оффер:</strong> {{ item.offerName }}</p>
+              <p><strong>Цена:</strong> {{ item.price }}</p>
+              <p><strong>Брокер:</strong> {{ item.broker }}</p>
+              <p><strong>Статус:</strong> {{ item.status }}</p>
+            </el-card>
+          </li>
+        </ul>
+    
+        <!-- изменение оферов из оферсЛист лида -->
+        <div v-if="isLeadOffersEdit">
+          <div v-if="!leadUpdatedLoading" v-for="(item, index) in isShowLeadObjectToModal.offersList" :key="index" style="margin-bottom: 16px;">
+            <el-card shadow="hover" style="background-color: #f5f5f5; border-radius: 8px; padding: 16px;">
+              <el-form label-position="top" label-width="100px" style="margin-bottom: 10px;">
+                
+                <el-form-item label="Оффер">
+                  <el-input v-model="item.offerName" placeholder="Введите название оффера" />
+                </el-form-item>
+                
+                <el-form-item label="Цена">
+                  <el-input v-model="item.price" placeholder="Введите цену" type="number" />
+                </el-form-item>
+                
+                <el-form-item label="Брокер">
+                  <FormItemSelect v-if="brokersList.length > 0" v-model="item.broker" :options="brokersList" valueKey="name" labelKey="name" />
+                </el-form-item>
+                
+                <el-form-item label="Статус резиденции">
+                  <el-select v-model="item.status" placeholder="Выберите статус">
+                    <el-option v-for="(status, idx) in statusesArray" :key="idx" :label="status" :value="status" />
+                  </el-select>
+                </el-form-item>
+              
+              </el-form>
+              <el-button type="danger" @click="removeOffer(index)" style="margin-top: 10px; width: 30%;" plain>
+                <el-icon style="margin-right: 10px;"><Delete /></el-icon>
+                Удалить оффер
+              </el-button>
+            </el-card>
+          </div>
+
+          <!-- загрузка изменений объекта лида и usersStats -->
+          <div v-if="leadUpdatedLoading">
+            <el-skeleton :rows="4"></el-skeleton>
+          </div>
+    
+          <div style="display: flex; justify-content: space-between; margin-top: 20px;">
+            <el-button :loading="leadUpdatedLoading" type="warning" @click="addNewOfferObject" :disabled="!isLeadOffersEdit">+ оффер</el-button>
+            <el-button :loading="leadUpdatedLoading" type="success" @click="saveChangesLeadOffers" :disabled="!isLeadOffersEdit">Сохранить</el-button>
+          </div>
+        </div>
+      </div>
     </el-dialog>
 
 
@@ -217,6 +268,8 @@
         userObject: null,
         rankName: null,
         selfLeadsOptions: ['Сам', 'На брокера', 'Ручной'],
+        isLeadOffersEdit: false,
+        leadUpdatedLoading: false
       }
     },
     components: {
@@ -237,6 +290,50 @@
       }
     },
     methods: {
+      addNewOfferObject() {
+        this.isShowLeadObjectToModal.offersList.push({
+          offerName: 'ЖК альфа',
+          price: 10000,
+          broker: this.brokersList[0].name,
+          status: 'hold'
+        })
+        console.log(this.brokersList)
+      },
+      removeOffer(index) {
+        this.isShowLeadObjectToModal.offersList.splice(index, 1)
+      },
+      async saveChangesLeadOffers() {
+        try {
+
+          this.leadUpdatedLoading = true
+
+          let response = await this.$store.dispatch('createDataList', {
+            col: 'api/leads/offers/edit',
+            data: {
+              leadObject: this.isShowLeadObjectToModal
+            }
+          })
+
+          ElMessage({
+            message: 'Лид успешно обновлен',
+            type: 'success',
+          })
+
+          this.leadUpdatedLoading = false
+
+          this.isShowModalLeadInfo = false
+
+          await this.fetchLeads()
+
+        } catch (e) {
+          console.log(e.message)
+
+          ElMessage({
+            message: `ошибка при обнолвение оферов лида ${e.message}`,
+            type: 'error',
+          })
+        }
+      },
       handleTabClick(tab) {
         if (tab.name === 'leads') {
             this.fetchLeads()

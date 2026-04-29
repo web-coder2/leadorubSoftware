@@ -93,6 +93,52 @@ router.post('/api/leads/upsert', async (req, res) => {
 
 })
 
+router.post('/api/leads/offers/edit', async (req, res) => {
+    try {
+
+        let { leadObject } = req.body
+
+        const updatedLead = { ...leadObject }
+        delete updatedLead._id
+
+        let newLeadPrice = 0
+        let newLeadHoldCount = 0
+
+        let editedLeadDate = dayjs(updatedLead.date).format('YYYY-MM-DD')
+
+        updatedLead.offersList.forEach((offer) => {
+            if (['hold', 'confirmed', 'refused'].includes(offer.status)) {
+                const price = Number(offer.price) || 0
+                newLeadPrice += price
+                newLeadHoldCount += 1
+            }
+        })
+
+        const resultByUpdateLeadOffers = await leadsModel.findOneAndUpdate(
+            { phone: updatedLead.phone, date: updatedLead.date },
+            { 
+                $set: {
+                    price: newLeadPrice,
+                    offersList: updatedLead.offersList,
+                    countHold: newLeadHoldCount
+                } 
+            }
+        )
+
+        let updateStatsSalary = await setUsersStatsToDB(editedLeadDate, editedLeadDate)
+
+        res.status(200).json({
+            result: resultByUpdateLeadOffers 
+        })
+
+    } catch (e) {
+        console.log(e.message)
+        res.status(500).json({
+            msg: e.message
+        })
+    }
+})
+
 router.post('/api/leads/edit', async (req, res) => {
     try {
 
