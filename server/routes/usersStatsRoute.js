@@ -33,6 +33,54 @@ router.get('/api/salary/updateInfo', async (req, res) => {
 
 })
 
+router.get('/api/salary/bestLidorub', async (req, res) => {
+    try {
+
+        const { date } = req.query
+
+        const startMonth = dayjs(date).startOf('month').format('YYYY-MM-DD')
+        const endMonth = dayjs(date).endOf('month').format('YYYY-MM-DD')
+
+        const monthlySalaryData = await usersStatsModel.find({
+            date: {
+                $gte: startMonth,
+                $lte: endMonth
+            }
+        })
+
+        let aggregatedMonthlyData = {}
+
+        monthlySalaryData.forEach((date) => {
+            if (aggregatedMonthlyData[date.name]) {
+                aggregatedMonthlyData[date.name].clear += date.clear
+            } else {
+                aggregatedMonthlyData[date.name] = {
+                    name: date.name,
+                    clear: date.clear
+                }
+            }
+        })
+
+        aggregatedMonthlyData = Object.values(aggregatedMonthlyData)
+
+        aggregatedMonthlyData.sort((a, b) => {
+            return b.clear - a.clear
+        })
+
+        const bestLidorub = aggregatedMonthlyData[0]
+        
+        res.status(200).json({
+            data: bestLidorub,
+            monthToBest: date
+        })
+
+    } catch (e) {
+        console.log(e.message)
+        res.status(500).json({
+            msg: e.message
+        })
+    }
+})
 
 router.get('/api/salary/get', async (req, res) => {
 

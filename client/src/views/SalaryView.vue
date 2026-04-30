@@ -20,6 +20,7 @@
         <!-- easy buttons -->
         <el-button @click="easyGetSalary('today')">сегодня</el-button>
         <el-button @click="easyGetSalary('yesterday')">вчера</el-button>
+        <el-button v-if="userRole === 'admin' && bestLidorub" @click="openModalWithBest">Лучший лидоруб</el-button>
     </div>
 
     <el-button @click="isShowClearCalculation = true" v-if="userRank === 'admin'">Проверить чистую</el-button>
@@ -58,6 +59,11 @@
         <el-table-column :width="100" prop="clear" label="Чистая"></el-table-column>
         <!-- <el-table-column prop="brokerSalary" label="ЗП брокерам"></el-table-column> -->
     </el-table>
+
+    <el-dialog title="Лучший лидоруб" v-model="modalWithBestLidorub" width="500px">
+        <h3>За месяц <span>{{ monthToBestLidorub }}</span></h3>
+        <p>Лучший Лидоруб: <strong>{{ bestLidorub.name }}</strong> чистая: <strong>{{ bestLidorub.clear }}</strong></p>
+    </el-dialog>
     
 </template>
 
@@ -75,6 +81,9 @@
 
     import dayjs from 'dayjs'
     import axios from 'axios'
+    import 'dayjs/locale/ru'
+
+    dayjs.locale('ru')
 
     import { ArrowRight, ArrowDown } from '@element-plus/icons-vue'
 
@@ -89,6 +98,9 @@
                 showFullUserCol: true,
                 isMobile: false,
                 userColumnWidth: 150,
+                bestLidorub: null,
+                monthToBestLidorub: null,
+                modalWithBestLidorub: false
             }
         },
         components: {
@@ -105,6 +117,22 @@
                     }
                 })
                 this.salaryTableData = response.data
+            },
+            async getBestLidorub() {
+                try {
+                    const response = await this.$store.dispatch('getDataList', {
+                        col: 'api/salary/bestLidorub',
+                        params: {
+                            date: dayjs(this.gte).format('YYYY-MM-DD')
+                        }
+                    })
+
+                    this.bestLidorub = response.data
+                    this.monthToBestLidorub = dayjs(response.monthToBest).format('MMMM')
+
+                } catch (e) {
+                    console.log(e.message)
+                }
             },
             toggleWidthColumn() {
                 this.showFullUserCol =! this.showFullUserCol
@@ -132,7 +160,10 @@
             async getUserStats() {
                 this.userObject = this.$store.getters['getUserObject']
                 this.userRole = this.userObject.rankName
-            }
+            },
+            openModalWithBest() {
+                this.modalWithBestLidorub = true
+            },  
         },
         async beforeMount() {
 
@@ -140,6 +171,7 @@
 
             await this.getSalaryData()
             await this.getUserStats()
+            await this.getBestLidorub()
         }
     }
 
